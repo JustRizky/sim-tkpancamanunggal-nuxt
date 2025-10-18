@@ -1,7 +1,5 @@
 <template>
-  <Header />
   <UMain class="bg-white">
     <NuxtPage />
   </UMain>
-  <Footer />
 </template>
