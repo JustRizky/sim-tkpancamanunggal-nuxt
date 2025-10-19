@@ -18,28 +18,33 @@ export default defineEventHandler(async (event) => {
       const hero = await prisma.heroSection.findUnique({ where: { id: 1 } })
       return hero || { message: 'HeroSection not found' }
 
-    case 'POST':
+    case 'POST': {
       const parts = await readMultipartFormData(event)
       const title = parts.find((p) => p.name === 'title')?.data.toString() || ''
       const paragraph = parts.find((p) => p.name === 'paragraph')?.data.toString() || ''
-      const file = parts.find((p) => p.filename)?.data
-
-      if (!file) return { success: false, message: 'File is required' }
-
-      const uploadResult = await new Promise<any>((resolve, reject) => {
-        const uploadStream = cloudinary.uploader.upload_stream(
-          { folder: 'hero-section', resource_type: 'auto' },
-          (error, result) => {
-            if (error) reject(error)
-            else resolve(result)
-          }
-        )
-        uploadStream.end(file)
-      })
-
-      const imageUrl = uploadResult.secure_url
+      const filePart = parts.find((p) => p.filename)
+      const keepOldImage = parts.find((p) => p.name === 'keepOldImage')?.data.toString()
 
       const existing = await prisma.heroSection.findUnique({ where: { id: 1 } })
+      let imageUrl = existing?.imageUrl || ''
+
+      if (filePart) {
+        const file = filePart.data
+        const uploadResult = await new Promise<any>((resolve, reject) => {
+          const uploadStream = cloudinary.uploader.upload_stream(
+            { folder: 'hero-section', resource_type: 'auto' },
+            (error, result) => {
+              if (error) reject(error)
+              else resolve(result)
+            }
+          )
+          uploadStream.end(file)
+        })
+        imageUrl = uploadResult.secure_url
+      } else if (keepOldImage === 'true' && existing?.imageUrl) {
+        imageUrl = existing.imageUrl
+      }
+
       const heroUpdated = existing
         ? await prisma.heroSection.update({
             where: { id: 1 },
@@ -50,6 +55,7 @@ export default defineEventHandler(async (event) => {
           })
 
       return heroUpdated
+    }
 
     case 'DELETE':
       await prisma.heroSection.delete({ where: { id: 1 } })

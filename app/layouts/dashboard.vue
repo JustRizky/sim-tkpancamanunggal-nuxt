@@ -9,6 +9,15 @@
       to: '/dashboard/home',
       icon: 'i-lucide-house',
       active: route.path === '/dashboard/home' ? 'primary' : 'neutral',
+      defaultOpen: true,
+      children: [
+        {
+          label: 'Galeri',
+          to: '/dashboard/home/gallery',
+          icon: 'i-lucide-images',
+          active: route.path === '/dashboard/home/gallery' ? 'primary' : 'neutral',
+        },
+      ],
     },
     {
       label: 'About',

@@ -1,6 +1,4 @@
 <script setup lang="ts">
-  import Card from '~/components/card.vue'
-
   const items = [
     'https://picsum.photos/468/468?random=1',
     'https://picsum.photos/468/468?random=2',
@@ -9,11 +7,45 @@
     'https://picsum.photos/468/468?random=5',
     'https://picsum.photos/468/468?random=6',
   ]
+
+  interface HeroSection {
+    id: number
+    title: string
+    paragraph: string
+    imageUrl: string
+  }
+
+  // const hero = ref<HeroSection>({
+  //   id: 1,
+  //   title: '',
+  //   paragraph: '',
+  //   imageUrl: '',
+  // })
+
+  // const fetchHero = async () => {
+  //   try {
+  //     const data = await $fetch<HeroSection>('/api/hero')
+  //     hero.value = data
+  //   } catch (err) {
+  //     console.error('Gagal ambil data hero:', err)
+  //   }
+  // }
+
+  // onMounted(fetchHero)
+
+  const { data: hero } = await useAsyncData('hero', () => $fetch<HeroSection>('/api/hero'))
 </script>
 
 <template>
   <section class="relative h-screen w-full bg-white">
-    <img src="/hero.png" alt="Hero Image" class="w-full h-full object-cover" />
+    <!-- <img src="/hero.png" alt="Hero Image" class="w-full h-full object-cover" /> -->
+    <img
+      v-if="hero.imageUrl"
+      :src="hero.imageUrl"
+      alt="Hero Image"
+      class="w-full h-full object-cover"
+    />
+    <img v-else src="/hero.png" alt="Hero Image" class="w-full h-full object-cover opacity-50" />
 
     <div
       class="absolute top-0 left-0 h-full w-full pointer-events-none"
@@ -28,10 +60,14 @@
       >
         SELAMAT DATANG DI TK PANCA MANUNGGAL
       </h3>
-      <h1 class="text-5xl md:text-6xl font-bold text-blue-900 mb-4">Belajar & Bermain</h1>
+      <h1 class="text-5xl md:text-6xl font-bold text-blue-900 mb-4">
+        {{ hero.title || 'Belajar & Bermain' }}
+      </h1>
       <p class="text-gray-700 md:text-lg mb-6 leading-relaxed">
-        Tempat yang menyenangkan dan kreatif di mana anak-anak dapat belajar, bermain, dan tumbuh
-        dengan penuh kasih serta keceriaan setiap hari.
+        {{
+          hero.paragraph ||
+          'Tempat yang menyenangkan dan kreatif di mana anak-anak dapat belajar, bermain, dan tumbuh dengan penuh kasih serta keceriaan setiap hari.'
+        }}
       </p>
       <UButton
         to="/ppdb"

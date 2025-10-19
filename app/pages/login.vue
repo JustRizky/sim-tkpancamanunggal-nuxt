@@ -1,7 +1,5 @@
 <script setup lang="ts">
   import * as z from 'zod'
-  import type { FormSubmitEvent, AuthFormField } from '@nuxt/ui'
-  import { select } from '#build/ui'
 
   const toast = useToast()
   const router = useRouter()

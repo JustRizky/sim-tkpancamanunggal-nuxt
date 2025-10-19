@@ -61,21 +61,35 @@
   }
 
   const saveHero = async () => {
-    if (!file.value) return alert('Please select an image file!')
+    try {
+      const formData = new FormData()
+      formData.append('title', form.value.title)
+      formData.append('paragraph', form.value.paragraph)
 
-    const formData = new FormData()
-    formData.append('title', form.value.title)
-    formData.append('paragraph', form.value.paragraph)
-    formData.append('file', file.value)
+      // Jika tidak ada file baru, kirim flag kosong saja
+      if (file.value) {
+        formData.append('file', file.value)
+      } else {
+        formData.append('keepOldImage', 'true')
+      }
 
-    const updated = await $fetch('/api/hero', {
-      method: 'POST',
-      body: formData,
-    })
+      const updated = await $fetch('/api/hero', {
+        method: 'POST',
+        body: formData,
+      })
 
-    hero.value = updated as HeroSection
-    alert('Hero Section updated!')
+      hero.value = updated as HeroSection
+      file.value = null
+      alert('Hero Section updated!')
+    } catch (error) {
+      console.error(error)
+      alert('Gagal update hero section.')
+    }
   }
 
   onMounted(fetchHero)
+
+  definePageMeta({
+    layout: 'dashboard',
+  })
 </script>
