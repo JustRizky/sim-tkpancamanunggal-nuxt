@@ -72,7 +72,7 @@
         color: 'success',
       })
 
-      router.push('/dashboard')
+      router.push('/dashboard/home')
     } catch (err: any) {
       // console.log('Login failed:', err?.data?.statusMessage || err)
       toast.add({

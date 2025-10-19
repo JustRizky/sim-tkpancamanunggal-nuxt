@@ -8,25 +8,25 @@
       label: 'Home',
       to: '/',
       icon: 'i-lucide-home',
-      active: route.path === '/',
+      active: route.path === '/' ? 'primary' : 'neutral',
     },
     {
       label: 'Tentang Kami',
       to: '/about',
       icon: 'i-lucide-school',
-      active: route.path.startsWith('/about'),
+      active: route.path === '/about' ? 'primary' : 'neutral',
     },
     {
       label: 'PPDB',
       to: '/ppdb',
       icon: 'i-lucide-file-text',
-      active: route.path.startsWith('/ppdb'),
+      active: route.path === '/ppdb' ? 'primary' : 'neutral',
     },
     {
       label: 'Kontak Kami',
       to: '/contact',
       icon: 'i-lucide-phone',
-      active: route.path.startsWith('/contact'),
+      active: route.path === '/contact' ? 'primary' : 'neutral',
     },
   ])
 </script>
@@ -68,7 +68,8 @@
         :items="
           items.map((item) => ({
             ...item,
-            icon: `${item.icon} ${route.path === item.to ? '!text-blue-900' : '!text-gray-700'}`,
+            icon: item.icon,
+            iconClass: `${item.icon} ${route.path === item.to ? '!text-blue-900' : '!text-gray-700'}`,
             class:
               $route.path === item.to
                 ? 'bg-yellow-400 text-blue-900 rounded-md font-bold'
