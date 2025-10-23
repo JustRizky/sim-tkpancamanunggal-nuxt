@@ -33,7 +33,7 @@
 
   // onMounted(fetchHero)
 
-  const { data: hero } = await useAsyncData('hero', () => $fetch<HeroSection>('/api/hero'))
+  const { data: hero } = useAsyncData('hero', () => $fetch<HeroSection>('/api/hero'))
 </script>
 
 <template>
@@ -54,28 +54,30 @@
       "
     />
 
-    <div class="absolute top-1/2 left-16 md:left-24 lg:left-32 -translate-y-1/2 z-10 max-w-xl">
-      <h3
-        class="inline-block text-lg md:text-xl font-bold text-white mb-2 bg-blue-400 px-4 py-1 rounded-md text-center"
-      >
-        SELAMAT DATANG DI TK PANCA MANUNGGAL
-      </h3>
-      <h1 class="text-5xl md:text-6xl font-bold text-blue-900 mb-4">
-        {{ hero.title || 'Belajar & Bermain' }}
-      </h1>
-      <p class="text-gray-700 md:text-lg mb-6 leading-relaxed">
-        {{
-          hero.paragraph ||
-          'Tempat yang menyenangkan dan kreatif di mana anak-anak dapat belajar, bermain, dan tumbuh dengan penuh kasih serta keceriaan setiap hari.'
-        }}
-      </p>
-      <UButton
-        to="/ppdb"
-        size="xl"
-        class="rounded-full px-8 py-4 font-black bg-yellow-400 hover:bg-yellow-500"
-      >
-        Daftarkan Sekarang</UButton
-      >
+    <div class="absolute top-1/2 left-0 -translate-y-1/2 z-10 w-full px-8 md:px-16 lg:px-32">
+      <div class="max-w-2xl">
+        <h3
+          class="inline-block text-lg md:text-xl font-bold text-white mb-2 bg-blue-400 px-4 py-1 rounded-md text-center"
+        >
+          SELAMAT DATANG DI TK PANCA MANUNGGAL
+        </h3>
+        <h1 class="text-5xl md:text-6xl font-bold text-blue-900 mb-4">
+          {{ hero.title || 'Belajar & Bermain' }}
+        </h1>
+        <p class="text-gray-700 md:text-lg mb-6 leading-relaxed">
+          {{
+            hero.paragraph ||
+            'Tempat yang menyenangkan dan kreatif di mana anak-anak dapat belajar, bermain, dan tumbuh dengan penuh kasih serta keceriaan setiap hari.'
+          }}
+        </p>
+        <UButton
+          to="/ppdb"
+          size="xl"
+          class="rounded-full px-8 py-4 font-black bg-yellow-400 hover:bg-yellow-500"
+        >
+          Daftarkan Sekarang
+        </UButton>
+      </div>
     </div>
 
     <div class="absolute bottom-0 left-0 w-full overflow-hidden leading-[0]">

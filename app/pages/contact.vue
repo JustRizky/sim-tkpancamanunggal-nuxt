@@ -37,6 +37,17 @@
   <section
     class="relative flex flex-col md:flex-row items-center justify-center gap-8 lg:gap-16 min-h-screen bg-blue-900 px-8 py-16 text-white"
   >
+    <svg
+      class="absolute inset-0 w-full h-full opacity-10 pointer-events-none"
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 200 200"
+      preserveAspectRatio="xMidYMid slice"
+    >
+      <path d="M0 50 Q50 0 100 50 T200 50" fill="none" stroke="white" stroke-width="1" />
+      <path d="M0 100 Q50 50 100 100 T200 100" fill="none" stroke="white" stroke-width="1" />
+      <path d="M0 150 Q50 100 100 150 T200 150" fill="none" stroke="white" stroke-width="1" />
+    </svg>
+
     <div class="flex-1 space-y-8 max-w-3xl">
       <div class="text-center">
         <h3 class="text-2xl font-semibold mb-4">
@@ -59,11 +70,7 @@
         >
           <template #default>
             <div class="flex flex-col items-center justify-center text-center h-full">
-              <UIcon
-                :name="card.icon"
-                class="w-8 h-8 mb-2 flex-shrink-0 mx-auto"
-                :class="card.color"
-              />
+              <UIcon :name="card.icon" class="w-8 h-8 mb-2 flex-shrink-0 mx-auto" />
               <h3 class="text-lg font-bold mb-1">{{ card.title }}</h3>
               <p class="text-xs font-medium text-gray-700">{{ card.description }}</p>
             </div>
@@ -76,10 +83,7 @@
           src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3958.111191112115!2d112.73039617606253!3d-7.228156770984133!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2dd7f90f395c70c1%3A0x7eada19a0406c6!2sTK%20Panca%20Manunggal%20Surabaya!5e0!3m2!1sid!2sid!4v1761109407543!5m2!1sid!2sid"
           width="100%"
           height="300"
-          style="border: 0"
-          allowfullscreen=""
           loading="lazy"
-          referrerpolicy="no-referrer-when-downgrade"
           class="rounded-lg shadow-lg"
         />
       </div>

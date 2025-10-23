@@ -1,8 +1,19 @@
 <template>
   <div class="space-y-16">
     <section
-      class="relative flex flex-col md:flex-row items-center justify-center gap-8 min-h-screen bg-blue-900 px-8 py-16"
+      class="relative flex flex-col md:flex-row items-center justify-center gap-8 min-h-screen px-8 py-16 text-white bg-[url('')] bg-blue-900 bg-repeat bg-[length:300px_300px]"
     >
+      <svg
+        class="absolute inset-0 w-full h-full opacity-10 pointer-events-none"
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 200 200"
+        preserveAspectRatio="xMidYMid slice"
+      >
+        <path d="M0 50 Q50 0 100 50 T200 50" fill="none" stroke="white" stroke-width="1" />
+        <path d="M0 100 Q50 50 100 100 T200 100" fill="none" stroke="white" stroke-width="1" />
+        <path d="M0 150 Q50 100 100 150 T200 150" fill="none" stroke="white" stroke-width="1" />
+      </svg>
+
       <div class="text-white text-center max-w-3xl">
         <h3 class="text-2xl font-semibold mb-6">
           <span class="relative inline-block">
@@ -86,6 +97,7 @@
 
     <!-- Struktur Sekolah -->
     <section class="p-8 bg-white text-center">
+      <!-- Judul -->
       <h2 class="text-5xl font-extrabold text-blue-900 mb-8">
         <span class="relative inline-block">
           <span class="absolute left-0 right-0 bottom-[6px] h-[0.5em] bg-pink-300 z-0" />
@@ -95,8 +107,9 @@
 
       <div class="mb-10">
         <h3 class="text-2xl font-bold mb-4 text-gray-700">Kepala Sekolah</h3>
-        <div
-          class="bg-gray-50 p-6 rounded-xl shadow-lg flex flex-col items-center w-full md:w-1/2 mx-auto transition transform hover:-translate-y-1 hover:shadow-2xl"
+        <UCard
+          class="w-full md:w-1/2 mx-auto hover:shadow-2xl transition transform hover:-translate-y-1"
+          :ui="{ body: 'flex flex-col items-center text-center space-y-2' }"
         >
           <img
             src="https://via.placeholder.com/120"
@@ -105,44 +118,46 @@
           />
           <h4 class="font-semibold text-lg">Budi Santoso, M.Pd</h4>
           <p class="text-gray-600 text-sm">Kepala Sekolah</p>
-        </div>
+        </UCard>
       </div>
 
       <div class="mb-10">
         <h3 class="text-2xl font-bold mb-6 text-gray-700">Guru</h3>
         <div class="grid sm:grid-cols-2 md:grid-cols-3 gap-8 justify-center">
-          <div
+          <UCard
             v-for="guru in guruList"
             :key="guru.name"
-            class="bg-gray-50 p-6 rounded-xl shadow-lg hover:shadow-2xl transition transform hover:-translate-y-1"
+            class="hover:shadow-2xl transition transform hover:-translate-y-1"
+            :ui="{ body: 'flex flex-col items-center text-center space-y-2' }"
           >
             <img
-              :src="guru.image"
+              :src="guru.foto"
               :alt="guru.name"
-              class="rounded-full w-24 h-24 object-cover mx-auto mb-3 border-4 border-blue-200"
+              class="rounded-full w-24 h-24 object-cover border-4 border-blue-200"
             />
             <h4 class="text-lg font-semibold text-gray-800">{{ guru.name }}</h4>
             <p class="text-sm text-gray-600">{{ guru.mapel }}</p>
-          </div>
+          </UCard>
         </div>
       </div>
 
       <div>
         <h3 class="text-2xl font-bold mb-6 text-gray-700">Staf & Karyawan</h3>
         <div class="grid sm:grid-cols-2 md:grid-cols-3 gap-8 justify-center">
-          <div
+          <UCard
             v-for="staf in staffList"
             :key="staf.name"
-            class="bg-gray-50 p-6 rounded-xl shadow-lg hover:shadow-2xl transition transform hover:-translate-y-1"
+            class="hover:shadow-2xl transition transform hover:-translate-y-1"
+            :ui="{ body: 'flex flex-col items-center text-center space-y-2' }"
           >
             <img
-              :src="staf.image"
+              :src="staf.foto"
               :alt="staf.name"
-              class="rounded-full w-24 h-24 object-cover mx-auto mb-3 border-4 border-green-200"
+              class="rounded-full w-24 h-24 object-cover border-4 border-green-200"
             />
             <h4 class="text-lg font-semibold text-gray-800">{{ staf.name }}</h4>
             <p class="text-sm text-gray-600">{{ staf.jabatan }}</p>
-          </div>
+          </UCard>
         </div>
       </div>
     </section>
