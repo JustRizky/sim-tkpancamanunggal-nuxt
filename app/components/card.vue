@@ -6,12 +6,6 @@
     <div class="p-5">
       <h3 class="text-xl font-semibold text-blue-900 mb-2">{{ title }}</h3>
       <p class="text-gray-700 mb-4">{{ description }}</p>
-      <a
-        :href="link"
-        class="inline-block text-yellow-600 font-medium hover:text-yellow-700 transition"
-      >
-        Baca Selengkapnya →
-      </a>
     </div>
   </div>
 </template>
@@ -21,6 +15,5 @@
     title: String,
     description: String,
     image: String,
-    link: String,
   })
 </script>

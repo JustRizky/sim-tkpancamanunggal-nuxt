@@ -95,9 +95,7 @@
       </div>
     </section>
 
-    <!-- Struktur Sekolah -->
     <section class="p-8 bg-white text-center">
-      <!-- Judul -->
       <h2 class="text-5xl font-extrabold text-blue-900 mb-8">
         <span class="relative inline-block">
           <span class="absolute left-0 right-0 bottom-[6px] h-[0.5em] bg-pink-300 z-0" />

@@ -15,30 +15,21 @@
     imageUrl: string
   }
 
-  // const hero = ref<HeroSection>({
-  //   id: 1,
-  //   title: '',
-  //   paragraph: '',
-  //   imageUrl: '',
-  // })
+  interface ProgramsSection {
+    id: number
+    title: string
+    description: string
+    imageUrl: string
+  }
 
-  // const fetchHero = async () => {
-  //   try {
-  //     const data = await $fetch<HeroSection>('/api/hero')
-  //     hero.value = data
-  //   } catch (err) {
-  //     console.error('Gagal ambil data hero:', err)
-  //   }
-  // }
-
-  // onMounted(fetchHero)
-
-  const { data: hero } = useAsyncData('hero', () => $fetch<HeroSection>('/api/hero'))
+  const { data: hero } = await useAsyncData('hero', () => $fetch<HeroSection>('/api/hero'))
+  const { data: programs } = await useAsyncData('programs', () =>
+    $fetch<ProgramsSection[]>('/api/programs')
+  )
 </script>
 
 <template>
   <section class="relative h-screen w-full bg-white">
-    <!-- <img src="/hero.png" alt="Hero Image" class="w-full h-full object-cover" /> -->
     <img
       v-if="hero.imageUrl"
       :src="hero.imageUrl"
@@ -109,23 +100,11 @@
     </h2>
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-10 justify-items-center">
       <Card
-        title="Program TK A"
-        description="Membangun karakter anak melalui aktivitas belajar sambil bermain yang interaktif."
-        image="tka.png"
-        link="#"
-      />
-      <Card
-        title="Program TK B"
-        description="Persiapan anak menuju sekolah dasar dengan metode pembelajaran kreatif dan kolaboratif."
-        image="tkb.png"
-        link="#"
-      />
-      <Card
-        title="Program Ekstrakurikuler"
-        description="Kegiatan ekstrakurikuler yang dirancang untuk mengembangkan bakat dan minat anak, meliputi seni, musik, olahraga, dan kegiatan kreatif lainnya, sehingga anak dapat belajar sambil bermain dan menyalurkan energi positifnya.
-"
-        image="karate.png"
-        link="#"
+        v-for="program in programs"
+        :key="program.id"
+        :title="program.title"
+        :description="program.description"
+        :image="program.imageUrl"
       />
     </div>
   </section>

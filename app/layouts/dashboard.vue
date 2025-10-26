@@ -17,6 +17,12 @@
           icon: 'i-lucide-images',
           active: route.path === '/dashboard/home/gallery' ? 'primary' : 'neutral',
         },
+        {
+          label: 'Program',
+          to: '/dashboard/home/programs',
+          icon: 'i-lucide-activity',
+          active: route.path === '/dashboard/home/programs' ? 'primary' : 'neutral',
+        },
       ],
     },
     {
@@ -94,6 +100,8 @@
         />
       </template>
     </UDashboardSidebar>
-    <NuxtPage />
+    <div class="flex-1 overflow-auto h-screen">
+      <NuxtPage />
+    </div>
   </UDashboardGroup>
 </template>

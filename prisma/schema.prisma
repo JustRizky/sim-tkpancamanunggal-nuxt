@@ -30,3 +30,11 @@ model HeroSection {
   updatedAt DateTime @updatedAt
 }
 
+model ProgramsSection {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String  @db.Text
+  imageUrl    String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
