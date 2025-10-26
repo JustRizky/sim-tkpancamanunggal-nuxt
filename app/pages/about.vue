@@ -94,16 +94,18 @@
       <div class="mb-10">
         <h3 class="text-2xl font-bold mb-4 text-gray-700">Kepala Sekolah</h3>
         <UCard
+          v-for="(teachers, i) in teachers?.filter((t) => t.role === 'Kepala Sekolah')"
+          :key="i"
           class="w-full md:w-1/2 mx-auto hover:shadow-2xl transition transform hover:-translate-y-1"
           :ui="{ body: 'flex flex-col items-center text-center space-y-2' }"
         >
           <img
-            src="https://via.placeholder.com/120"
+            :src="teachers.imageUrl"
             alt="Kepala Sekolah"
             class="rounded-full w-28 h-28 object-cover mb-3 border-4 border-blue-300"
           />
-          <h4 class="font-semibold text-lg">Budi Santoso, M.Pd</h4>
-          <p class="text-gray-600 text-sm">Kepala Sekolah</p>
+          <h4 class="font-semibold text-lg">{{ teachers.name }}</h4>
+          <p class="text-gray-600 text-sm">{{ teachers.tugas }}</p>
         </UCard>
       </div>
 
@@ -111,18 +113,18 @@
         <h3 class="text-2xl font-bold mb-6 text-gray-700">Guru</h3>
         <div class="grid sm:grid-cols-2 md:grid-cols-3 gap-8 justify-center">
           <UCard
-            v-for="guru in guruList"
-            :key="guru.name"
+            v-for="(teacher, i) in teachers?.filter((t) => t.role === 'Guru')"
+            :key="i"
             class="hover:shadow-2xl transition transform hover:-translate-y-1"
             :ui="{ body: 'flex flex-col items-center text-center space-y-2' }"
           >
             <img
-              :src="guru.foto"
-              :alt="guru.name"
+              :src="teacher.imageUrl"
+              :alt="teacher.name"
               class="rounded-full w-24 h-24 object-cover border-4 border-blue-200"
             />
-            <h4 class="text-lg font-semibold text-gray-800">{{ guru.name }}</h4>
-            <p class="text-sm text-gray-600">{{ guru.mapel }}</p>
+            <h4 class="text-lg font-semibold text-gray-800">{{ teacher.name }}</h4>
+            <p class="text-sm text-gray-600">{{ teacher.tugas }}</p>
           </UCard>
         </div>
       </div>
@@ -131,18 +133,18 @@
         <h3 class="text-2xl font-bold mb-6 text-gray-700">Staf & Karyawan</h3>
         <div class="grid sm:grid-cols-2 md:grid-cols-3 gap-8 justify-center">
           <UCard
-            v-for="staf in staffList"
-            :key="staf.name"
+            v-for="(teacher, i) in teachers?.filter((t) => t.role === 'Staff')"
+            :key="i"
             class="hover:shadow-2xl transition transform hover:-translate-y-1"
             :ui="{ body: 'flex flex-col items-center text-center space-y-2' }"
           >
             <img
-              :src="staf.foto"
-              :alt="staf.name"
+              :src="teacher.imageUrl"
+              :alt="teacher.name"
               class="rounded-full w-24 h-24 object-cover border-4 border-green-200"
             />
-            <h4 class="text-lg font-semibold text-gray-800">{{ staf.name }}</h4>
-            <p class="text-sm text-gray-600">{{ staf.jabatan }}</p>
+            <h4 class="text-lg font-semibold text-gray-800">{{ teacher.name }}</h4>
+            <p class="text-sm text-gray-600">{{ teacher.tugas }}</p>
           </UCard>
         </div>
       </div>
@@ -159,46 +161,17 @@
     misi: string
   }
 
+  interface Teacher {
+    id: number
+    imageUrl: string
+    name: string
+    role: string
+    tugas: string
+  }
+
   const { data: about } = await useAsyncData('about', () => $fetch<AboutSection>('/api/about'))
 
-  const guruList = [
-    {
-      name: 'Siti Rahmawati, S.Pd',
-      mapel: 'Matematika',
-      foto: 'https://via.placeholder.com/150',
-    },
-    {
-      name: 'Ahmad Fauzan, S.Pd',
-      mapel: 'Bahasa Indonesia',
-      foto: 'https://via.placeholder.com/150',
-    },
-    {
-      name: 'Rika Nuraini, S.Pd',
-      mapel: 'IPA',
-      foto: 'https://via.placeholder.com/150',
-    },
-  ]
-
-  const staffList = [
-    {
-      name: 'Andi Pratama',
-      jabatan: 'Staf Tata Usaha',
-      foto: 'https://via.placeholder.com/150',
-    },
-    {
-      name: 'Rina Melati',
-      jabatan: 'Bendahara',
-      foto: 'https://via.placeholder.com/150',
-    },
-    {
-      name: 'Agus Suwito',
-      jabatan: 'Petugas Kebersihan',
-      foto: 'https://via.placeholder.com/150',
-    },
-    {
-      name: 'Nur Hidayah',
-      jabatan: 'Penjaga Sekolah',
-      foto: 'https://via.placeholder.com/150',
-    },
-  ]
+  const { data: teachers } = await useAsyncData('teachers', () =>
+    $fetch<Teacher[]>('/api/teachers')
+  )
 </script>

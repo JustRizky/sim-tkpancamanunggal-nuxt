@@ -36,15 +36,6 @@
       to: '/dashboard/teachers',
       icon: 'i-lucide-users',
       active: route.path === '/dashboard/teachers' ? 'primary' : 'neutral',
-      defaultOpen: true,
-      children: [
-        {
-          label: 'Staff',
-          to: '/dashboard/teachers/staff',
-          icon: 'i-lucide-user-check',
-          active: route.path === '/dashboard/teachers/staff' ? 'primary' : 'neutral',
-        },
-      ],
     },
     {
       label: 'PPDB',
