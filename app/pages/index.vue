@@ -1,12 +1,12 @@
 <script setup lang="ts">
-  const items = [
-    'https://picsum.photos/468/468?random=1',
-    'https://picsum.photos/468/468?random=2',
-    'https://picsum.photos/468/468?random=3',
-    'https://picsum.photos/468/468?random=4',
-    'https://picsum.photos/468/468?random=5',
-    'https://picsum.photos/468/468?random=6',
-  ]
+  // const items = [
+  //   'https://picsum.photos/468/468?random=1',
+  //   'https://picsum.photos/468/468?random=2',
+  //   'https://picsum.photos/468/468?random=3',
+  //   'https://picsum.photos/468/468?random=4',
+  //   'https://picsum.photos/468/468?random=5',
+  //   'https://picsum.photos/468/468?random=6',
+  // ]
 
   interface HeroSection {
     id: number
@@ -22,9 +22,16 @@
     imageUrl: string
   }
 
+  interface CarouselItem {
+    imageUrl: string
+  }
+
   const { data: hero } = await useAsyncData('hero', () => $fetch<HeroSection>('/api/hero'))
   const { data: programs } = await useAsyncData('programs', () =>
     $fetch<ProgramsSection[]>('/api/programs')
+  )
+  const { data: carousel } = await useAsyncData('carousel', () =>
+    $fetch<CarouselItem[]>('/api/carousel')
   )
 </script>
 
@@ -139,7 +146,7 @@
       </span>
     </h2>
     <div class="mt-10">
-      <Carousel :items="items" />
+      <Carousel :items="carousel?.map((item) => item.imageUrl)" />
     </div>
   </section>
 

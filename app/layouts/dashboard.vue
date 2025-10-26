@@ -12,10 +12,10 @@
       defaultOpen: true,
       children: [
         {
-          label: 'Galeri',
-          to: '/dashboard/home/gallery',
+          label: 'Carousel',
+          to: '/dashboard/home/carousel',
           icon: 'i-lucide-images',
-          active: route.path === '/dashboard/home/gallery' ? 'primary' : 'neutral',
+          active: route.path === '/dashboard/home/carousel' ? 'primary' : 'neutral',
         },
         {
           label: 'Program',
