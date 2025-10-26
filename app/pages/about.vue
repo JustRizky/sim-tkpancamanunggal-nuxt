@@ -1,6 +1,7 @@
 <template>
   <div class="space-y-16">
     <section
+      v-if="about"
       class="relative flex flex-col md:flex-row items-center justify-center gap-8 min-h-screen px-8 py-16 text-white bg-[url('')] bg-blue-900 bg-repeat bg-[length:300px_300px]"
     >
       <svg
@@ -27,25 +28,18 @@
           </span>
         </h2>
 
-        <p class="leading-relaxed text-lg text-justify md:text-center">
-          TK Panca Manunggal Surabaya adalah lembaga pendidikan anak usia dini yang berlokasi di Jl.
-          Dapuan Baru II/82, Surabaya. Lembaga ini berada di bawah naungan Yayasan Panca Manunggal
-          Surabaya dan melayani pendidikan pra-sekolah dengan komitmen menciptakan lingkungan
-          belajar yang menyenangkan dan kreatif.
-        </p>
-
-        <p class="leading-relaxed text-lg text-justify md:text-center mt-4">
-          Seiring berjalannya waktu, sekolah terus mengembangkan fasilitas dan kurikulum agar sesuai
-          dengan kebutuhan anak usia dini di era modern. Pada tanggal 24 November 2021, sekolah
-          memperoleh SK operasional resmi sehingga memperkuat legalitas dan layanan. Dengan
-          akreditasi “B” dan kurikulum PAUD yang diimplementasikan, TK Panca Manunggal terus
-          berupaya membentuk generasi yang cerdas, mandiri, dan berbudi pekerti sejak usia dini.
+        <p
+          v-for="(sejarah, i) in about?.sejarah.split('|||')"
+          :key="i"
+          class="leading-relaxed text-lg text-justify md:text-center"
+        >
+          {{ sejarah }}
         </p>
       </div>
 
-      <div class="hidden sm:flex sm: w1/2 md:flex md:w-1/2 justify-center">
+      <div class="hidden sm:flex sm:w-1/2 md:flex md:w-1/2 justify-center">
         <img
-          src="/sekolah.png"
+          :src="about.imageUrl"
           alt="Foto Sekolah"
           class="rounded-lg shadow-lg w-4/5 h-auto object-cover border-4 border-white"
         />
@@ -77,19 +71,13 @@
 
         <div class="mb-12">
           <h3 class="text-3xl font-bold mb-4 text-gray-700">Visi</h3>
-          <p class="text-gray-700 text-lg leading-relaxed">
-            Menjadi sekolah unggulan yang menghasilkan generasi berkarakter, berprestasi, dan siap
-            menghadapi tantangan global.
-          </p>
+          <p class="text-gray-700 text-lg leading-relaxed">{{ about?.visi }}</p>
         </div>
 
         <div>
           <h3 class="text-3xl font-bold mb-4 text-gray-700">Misi</h3>
           <ul class="text-gray-700 text-lg leading-relaxed space-y-4 list-none">
-            <li>✨ Menyelenggarakan pendidikan berkualitas berbasis karakter dan kompetensi.</li>
-            <li>💡 Mendorong penguasaan teknologi dan kreativitas siswa.</li>
-            <li>🌈 Membangun lingkungan belajar yang inklusif dan menyenangkan.</li>
-            <li>🤝 Menjalin kerja sama dengan berbagai pihak untuk pengembangan pendidikan.</li>
+            <li v-for="(misi, i) in about?.misi.split(';')" :key="i">{{ misi }}</li>
           </ul>
         </div>
       </div>
@@ -163,6 +151,16 @@
 </template>
 
 <script lang="ts" setup>
+  interface AboutSection {
+    id: number
+    imageUrl: string
+    sejarah: string
+    visi: string
+    misi: string
+  }
+
+  const { data: about } = await useAsyncData('about', () => $fetch<AboutSection>('/api/about'))
+
   const guruList = [
     {
       name: 'Siti Rahmawati, S.Pd',

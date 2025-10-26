@@ -18,7 +18,6 @@
         <p class="text-gray-600 mb-4">{{ program.description }}</p>
 
         <div class="flex justify-between">
-          <a :href="program.link" target="_blank" class="text-blue-600 underline">Lihat</a>
           <div class="space-x-2">
             <button
               class="bg-yellow-400 text-white px-3 py-1 rounded hover:bg-yellow-500"

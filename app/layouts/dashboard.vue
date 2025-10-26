@@ -12,16 +12,16 @@
       defaultOpen: true,
       children: [
         {
-          label: 'Carousel',
-          to: '/dashboard/home/carousel',
-          icon: 'i-lucide-images',
-          active: route.path === '/dashboard/home/carousel' ? 'primary' : 'neutral',
-        },
-        {
           label: 'Program',
           to: '/dashboard/home/programs',
           icon: 'i-lucide-activity',
           active: route.path === '/dashboard/home/programs' ? 'primary' : 'neutral',
+        },
+        {
+          label: 'Carousel',
+          to: '/dashboard/home/carousel',
+          icon: 'i-lucide-images',
+          active: route.path === '/dashboard/home/carousel' ? 'primary' : 'neutral',
         },
       ],
     },
@@ -30,6 +30,21 @@
       to: '/dashboard/about',
       icon: 'i-lucide-school',
       active: route.path === '/dashboard/about' ? 'primary' : 'neutral',
+    },
+    {
+      label: 'Teachers',
+      to: '/dashboard/teachers',
+      icon: 'i-lucide-users',
+      active: route.path === '/dashboard/teachers' ? 'primary' : 'neutral',
+      defaultOpen: true,
+      children: [
+        {
+          label: 'Staff',
+          to: '/dashboard/teachers/staff',
+          icon: 'i-lucide-user-check',
+          active: route.path === '/dashboard/teachers/staff' ? 'primary' : 'neutral',
+        },
+      ],
     },
     {
       label: 'PPDB',
