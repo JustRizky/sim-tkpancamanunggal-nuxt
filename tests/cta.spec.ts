@@ -22,7 +22,7 @@ describe('CTA.vue', () => {
   }
 
   /**
-   * Test 1: Memastikan title dan description muncul di DOM
+   * Test 1: Memastikan title dan description muncul
    */
   it('renders title and description', () => {
     const wrapper = mount(CTA, {

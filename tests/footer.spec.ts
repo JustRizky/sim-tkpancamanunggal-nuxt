@@ -35,7 +35,7 @@ describe('Footer.vue', () => {
   })
 
   /**
-   * Test 2: Memastikan semua item navigasi muncul di footer
+ https://docs.google.com/spreadsheets/d/1zmqVjIWgUCtxanB3kFHV89iTMGT7985rQb-bwi2Qz00/edit?usp=sharing  * Test 2: Memastikan semua item navigasi muncul di footer
    */
   it('renders all navigation menu items', () => {
     const wrapper = mount(Footer, {
