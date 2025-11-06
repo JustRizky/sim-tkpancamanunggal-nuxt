@@ -17,7 +17,10 @@
     imageUrl: string
   }
 
-  const { data: hero } = await useAsyncData('hero', () => $fetch<HeroSection>('/api/hero'))
+  const { data: hero } = await useAsyncData('hero', async () => {
+    const data = await $fetch<HeroSection>('/api/hero')
+    return data ?? {}
+  })
   const { data: programs } = await useAsyncData('programs', () =>
     $fetch<ProgramsSection[]>('/api/programs')
   )
@@ -29,7 +32,7 @@
 <template>
   <section class="relative h-screen w-full bg-white">
     <img
-      v-if="hero.imageUrl"
+      v-if="hero?.imageUrl"
       :src="hero.imageUrl"
       alt="Hero Image"
       class="w-full h-full object-cover"
@@ -51,11 +54,11 @@
           SELAMAT DATANG DI TK PANCA MANUNGGAL
         </h3>
         <h1 class="text-5xl md:text-6xl font-bold text-blue-900 mb-4">
-          {{ hero.title || 'Belajar & Bermain' }}
+          {{ hero?.title || 'Belajar & Bermain' }}
         </h1>
         <p class="text-gray-700 md:text-lg mb-6 leading-relaxed">
           {{
-            hero.paragraph ||
+            hero?.paragraph ||
             'Tempat yang menyenangkan dan kreatif di mana anak-anak dapat belajar, bermain, dan tumbuh dengan penuh kasih serta keceriaan setiap hari.'
           }}
         </p>

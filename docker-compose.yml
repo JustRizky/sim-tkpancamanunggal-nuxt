@@ -8,9 +8,6 @@ services:
       DATABASE_URL: "mysql://root:admin123@db:3306/tkpancamanunggal"
     depends_on:
       - db
-    volumes:
-      - .:/app
-      - /app/node_modules
 
   db:
     image: mysql:8
