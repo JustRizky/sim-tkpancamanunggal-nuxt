@@ -5,6 +5,34 @@ import jwt from 'jsonwebtoken'
 const prisma = new PrismaClient()
 const JWT_SECRET = process.env.JWT_SECRET || 'supersecretkey'
 
+async function createAdminUser() {
+  const email = 'admin@gmail.com'
+  const password = 'admin123'
+  const hashedPassword = await bcrypt.hash(password, 10)
+
+  const existingUser = await prisma.user.findUnique({ where: { email } })
+  if (existingUser) {
+    console.log('Admin user already exists.')
+    return
+  }
+
+  const user = await prisma.user.create({
+    data: {
+      email,
+      password: hashedPassword,
+    },
+  })
+
+  console.log('Admin user created:', user)
+}
+
+createAdminUser()
+  .then(() => prisma.$disconnect())
+  .catch((err) => {
+    console.error(err)
+    prisma.$disconnect()
+  })
+
 export default defineEventHandler(async (event) => {
   const body = await readBody(event)
   const { email, password, remember } = body

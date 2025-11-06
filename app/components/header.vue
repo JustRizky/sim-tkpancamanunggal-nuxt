@@ -1,5 +1,7 @@
 <script setup lang="ts">
   import type { NavigationMenuItem } from '@nuxt/ui'
+  import { computed } from 'vue'
+  import { useRoute } from 'vue-router'
 
   const route = useRoute()
 
@@ -49,7 +51,7 @@
           ...item,
           icon: item.showIconVertical ? item.icon : undefined,
           class:
-            $route.path === item.to
+            route.path === item.to
               ? 'bg-yellow-400 text-blue-900 rounded-md font-bold'
               : 'text-gray-700 hover:bg-yellow-100 hover:text-blue-700 rounded-md',
         }))
@@ -69,9 +71,9 @@
           items.map((item) => ({
             ...item,
             icon: item.icon,
-            iconClass: `${item.icon} ${route.path === item.to ? '!text-blue-900' : '!text-gray-700'}`,
+            iconClass: `${item.icon} {route.path === item.to ? '!text-blue-900' : '!text-gray-700'}`,
             class:
-              $route.path === item.to
+              route.path === item.to
                 ? 'bg-yellow-400 text-blue-900 rounded-md font-bold'
                 : 'text-gray-700 hover:bg-yellow-100 hover:text-blue-700 rounded-md',
           }))
