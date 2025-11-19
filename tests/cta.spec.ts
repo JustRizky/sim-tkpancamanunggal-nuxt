@@ -12,7 +12,7 @@ vi.mock('vue-router', () => ({
 const UButtonMock = {
   name: 'UButton',
   props: ['color', 'variant', 'trailingIcon'],
-  template: '<button @click="$emit(\'click\')"><slot /></button>'
+  template: '<button @click="$emit(\'click\')"><slot /></button>',
 }
 
 describe('CTA.vue', () => {
@@ -27,7 +27,7 @@ describe('CTA.vue', () => {
   it('renders title and description', () => {
     const wrapper = mount(CTA, {
       props,
-      global: { components: { UButton: UButtonMock } }
+      global: { components: { UButton: UButtonMock } },
     })
 
     expect(wrapper.text()).toContain(props.title)
@@ -40,7 +40,7 @@ describe('CTA.vue', () => {
   it('renders two buttons with correct labels', () => {
     const wrapper = mount(CTA, {
       props,
-      global: { components: { UButton: UButtonMock } }
+      global: { components: { UButton: UButtonMock } },
     })
 
     const buttons = wrapper.findAllComponents(UButtonMock)
@@ -55,7 +55,7 @@ describe('CTA.vue', () => {
   it('clicking buttons calls router.push with correct path', async () => {
     const wrapper = mount(CTA, {
       props,
-      global: { components: { UButton: UButtonMock } }
+      global: { components: { UButton: UButtonMock } },
     })
 
     const buttons = wrapper.findAllComponents(UButtonMock)
@@ -66,4 +66,3 @@ describe('CTA.vue', () => {
     expect(pushMock).toHaveBeenCalledWith('/contact')
   })
 })
-
