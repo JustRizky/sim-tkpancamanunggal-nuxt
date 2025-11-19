@@ -3,9 +3,9 @@ services:
     build: .
     container_name: nuxt-app
     ports:
-      - "3000:3000"
+      - '3000:3000'
     environment:
-      DATABASE_URL: "mysql://root:admin123@db:3306/tkpancamanunggal"
+      DATABASE_URL: 'mysql://root:admin123@db:3306/tkpancamanunggal'
     depends_on:
       - db
 
@@ -17,10 +17,9 @@ services:
       MYSQL_ROOT_PASSWORD: admin123
       MYSQL_DATABASE: tkpancamanunggal
     ports:
-      - "3306:3306"
+      - '3306:3306'
     volumes:
       - mysql-data:/var/lib/mysql
 
 volumes:
   mysql-data:
-

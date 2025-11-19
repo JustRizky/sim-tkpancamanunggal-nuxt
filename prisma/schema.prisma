@@ -5,64 +5,64 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client-js"
-  binaryTargets = ["native", "linux-arm64-openssl-1.1.x"]
-  output   = "../app/generated/prisma"
+        provider      = "prisma-client-js"
+        binaryTargets = ["native", "linux-arm64-openssl-3.0.x"]
+        // output   = "../app/generated/prisma"
 }
 
 datasource db {
-  provider = "mysql"
-  url      = env("DATABASE_URL")
+        provider = "mysql"
+        url      = env("DATABASE_URL")
 }
 
 model User {
-  id       Int      @id @default(autoincrement())
-  email    String   @unique
-  password String
-  createdAt DateTime @default(now())
+        id        Int      @id @default(autoincrement())
+        email     String   @unique
+        password  String
+        createdAt DateTime @default(now())
 }
 
 model HeroSection {
-  id        Int      @id @default(1)
-  title     String
-  paragraph String
-  imageUrl  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+        id        Int      @id @default(1)
+        title     String
+        paragraph String
+        imageUrl  String
+        createdAt DateTime @default(now())
+        updatedAt DateTime @updatedAt
 }
 
 model ProgramsSection {
-  id          Int      @id @default(autoincrement())
-  title       String
-  description String  @db.Text
-  imageUrl    String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+        id          Int      @id @default(autoincrement())
+        title       String
+        description String   @db.Text
+        imageUrl    String
+        createdAt   DateTime @default(now())
+        updatedAt   DateTime @updatedAt
 }
 
 model Carousel {
-  id        Int      @id @default(autoincrement())
-  imageUrl  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+        id        Int      @id @default(autoincrement())
+        imageUrl  String
+        createdAt DateTime @default(now())
+        updatedAt DateTime @updatedAt
 }
 
 model About {
-  id          Int      @id @default(1)
-  imageUrl    String
-  sejarah     String   @db.Text
-  visi        String   @db.Text
-  misi        String   @db.Text
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+        id        Int      @id @default(1)
+        imageUrl  String
+        sejarah   String   @db.Text
+        visi      String   @db.Text
+        misi      String   @db.Text
+        createdAt DateTime @default(now())
+        updatedAt DateTime @updatedAt
 }
 
 model Teacher {
-  id        Int      @id @default(autoincrement())
-  imageUrl  String
-  name      String
-  role      String
-  tugas     String   @db.Text
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+        id        Int      @id @default(autoincrement())
+        imageUrl  String
+        name      String
+        role      String
+        tugas     String   @db.Text
+        createdAt DateTime @default(now())
+        updatedAt DateTime @updatedAt
 }
