@@ -58,6 +58,12 @@ export default defineEventHandler(async (event) => {
     expiresIn: remember ? '7d' : '1h',
   })
 
+  setCookie(event, 'token', token, {
+    httpOnly: false,
+    path: '/',
+    maxAge: remember ? 60 * 60 * 24 * 7 : 60 * 60,
+  })
+
   return {
     message: 'Login successful',
     user: { id: user.id, email: user.email },

@@ -1,15 +1,24 @@
 export default function authMiddleware(to: any, { navigateTo }: any) {
-  const isClient = typeof window !== 'undefined'
+  const token = useCookie('token')
 
-  if (isClient) {
-    const token = localStorage.getItem('token') || sessionStorage.getItem('token')
+  if (token.value) {
+    try {
+      const payload = JSON.parse(Buffer.from(token.value.split('.')[1], 'base64').toString())
 
-    if (!token && to.path.startsWith('/dashboard/home')) {
-      return navigateTo('/login')
+      const now = Math.floor(Date.now() / 1000)
+      if (payload.exp && payload.exp < now) {
+        token.value = null
+      }
+    } catch (err) {
+      token.value = null
     }
+  }
 
-    if (token && to.path === '/login') {
-      return navigateTo('/dashboard/home')
-    }
+  if (!token.value && to.path.startsWith('/dashboard')) {
+    return navigateTo('/login')
+  }
+
+  if (token.value && to.path === '/login') {
+    return navigateTo('/dashboard/home')
   }
 }
