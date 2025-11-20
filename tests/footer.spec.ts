@@ -4,19 +4,19 @@ import Footer from './../app/components/footer.vue'
 
 const UFooterMock = {
   name: 'UFooter',
-  template: '<div><slot name="left"/><slot name="right"/><slot /></div>'
+  template: '<div><slot name="left"/><slot name="right"/><slot /></div>',
 }
 
 const UNavigationMenuMock = {
   name: 'UNavigationMenu',
   props: ['items', 'variant'],
-  template: '<nav><ul><li v-for="item in items" :key="item.label">{{ item.label }}</li></ul></nav>'
+  template: '<nav><ul><li v-for="item in items" :key="item.label">{{ item.label }}</li></ul></nav>',
 }
 
 const UButtonMock = {
   name: 'UButton',
   props: ['icon', 'color', 'variant', 'to', 'target', 'ariaLabel'],
-  template: '<button><slot /></button>'
+  template: '<button><slot /></button>',
 }
 
 describe('Footer.vue', () => {
@@ -26,8 +26,12 @@ describe('Footer.vue', () => {
   it('renders copyright text', () => {
     const wrapper = mount(Footer, {
       global: {
-        components: { UFooter: UFooterMock, UNavigationMenu: UNavigationMenuMock, UButton: UButtonMock }
-      }
+        components: {
+          UFooter: UFooterMock,
+          UNavigationMenu: UNavigationMenuMock,
+          UButton: UButtonMock,
+        },
+      },
     })
 
     const year = new Date().getFullYear()
@@ -35,13 +39,17 @@ describe('Footer.vue', () => {
   })
 
   /**
- https://docs.google.com/spreadsheets/d/1zmqVjIWgUCtxanB3kFHV89iTMGT7985rQb-bwi2Qz00/edit?usp=sharing  * Test 2: Memastikan semua item navigasi muncul di footer
+   * Test 2: Memastikan semua item navigasi muncul di footer
    */
   it('renders all navigation menu items', () => {
     const wrapper = mount(Footer, {
       global: {
-        components: { UFooter: UFooterMock, UNavigationMenu: UNavigationMenuMock, UButton: UButtonMock }
-      }
+        components: {
+          UFooter: UFooterMock,
+          UNavigationMenu: UNavigationMenuMock,
+          UButton: UButtonMock,
+        },
+      },
     })
 
     const navItems = wrapper.findAll('li')
@@ -58,8 +66,12 @@ describe('Footer.vue', () => {
   it('renders social media buttons', () => {
     const wrapper = mount(Footer, {
       global: {
-        components: { UFooter: UFooterMock, UNavigationMenu: UNavigationMenuMock, UButton: UButtonMock }
-      }
+        components: {
+          UFooter: UFooterMock,
+          UNavigationMenu: UNavigationMenuMock,
+          UButton: UButtonMock,
+        },
+      },
     })
 
     const buttons = wrapper.findAllComponents(UButtonMock)
@@ -68,4 +80,3 @@ describe('Footer.vue', () => {
     expect(buttons[1].props('ariaLabel')).toBe('YouTube')
   })
 })
-

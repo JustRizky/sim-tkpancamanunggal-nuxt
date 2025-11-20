@@ -17,7 +17,8 @@ const UHeaderMock = {
 const UNavigationMenuMock = {
   name: 'UNavigationMenu',
   props: ['items', 'orientation', 'ui', 'class', 'collapsed'],
-  template: '<nav><ul><li v-for="item in items" :key="item.label">{{ item.label }} - {{ item.active }} - {{ item.iconClass }}</li></ul></nav>',
+  template:
+    '<nav><ul><li v-for="item in items" :key="item.label">{{ item.label }} - {{ item.active }} - {{ item.iconClass }}</li></ul></nav>',
 }
 
 const LogoMock = { name: 'Logo', template: '<div class="logo-mock" />' }
@@ -28,7 +29,9 @@ describe('Header.vue', () => {
    */
   it('renders title and logo', () => {
     const wrapper = mount(Header, {
-      global: { components: { UHeader: UHeaderMock, UNavigationMenu: UNavigationMenuMock, Logo: LogoMock } },
+      global: {
+        components: { UHeader: UHeaderMock, UNavigationMenu: UNavigationMenuMock, Logo: LogoMock },
+      },
     })
 
     const header = wrapper.findComponent(UHeaderMock)
@@ -42,7 +45,9 @@ describe('Header.vue', () => {
    */
   it('renders top navigation menu with correct items and active class', () => {
     const wrapper = mount(Header, {
-      global: { components: { UHeader: UHeaderMock, UNavigationMenu: UNavigationMenuMock, Logo: LogoMock } },
+      global: {
+        components: { UHeader: UHeaderMock, UNavigationMenu: UNavigationMenuMock, Logo: LogoMock },
+      },
     })
 
     const topMenu = wrapper.find('ul:not([data-orientation="vertical"])')
@@ -62,7 +67,9 @@ describe('Header.vue', () => {
    */
   it('renders body navigation menu with correct iconClass', () => {
     const wrapper = mount(Header, {
-      global: { components: { UHeader: UHeaderMock, UNavigationMenu: UNavigationMenuMock, Logo: LogoMock } },
+      global: {
+        components: { UHeader: UHeaderMock, UNavigationMenu: UNavigationMenuMock, Logo: LogoMock },
+      },
     })
 
     const bodyNavItems = wrapper.findAll('li')
@@ -73,4 +80,3 @@ describe('Header.vue', () => {
     expect(homeItem?.text()).toContain('neutral')
   })
 })
-

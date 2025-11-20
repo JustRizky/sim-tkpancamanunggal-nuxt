@@ -4,10 +4,16 @@ services:
     container_name: nuxt-app
     ports:
       - '3000:3000'
+    env_file:
+      - .env
     environment:
-      DATABASE_URL: 'mysql://root:admin123@db:3306/tkpancamanunggal'
+      DATABASE_URL: ${DATABASE_URL}
+      CLOUDINARY_CLOUD_NAME: ${CLOUDINARY_CLOUD_NAME}
+      CLOUDINARY_API_KEY: ${CLOUDINARY_API_KEY}
+      CLOUDINARY_API_SECRET: ${CLOUDINARY_API_SECRET}
     depends_on:
-      - db
+      db:
+        condition: service_healthy
 
   db:
     image: mysql:8
@@ -20,6 +26,11 @@ services:
       - '3306:3306'
     volumes:
       - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ['CMD', 'mysqladmin', 'ping', '-h', 'localhost']
+      interval: 5s
+      timeout: 3s
+      retries: 20
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin:latest

@@ -13,4 +13,3 @@ export default function authMiddleware(to: any, { navigateTo }: any) {
     }
   }
 }
-

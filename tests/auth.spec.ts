@@ -49,4 +49,3 @@ describe('auth.middleware', () => {
     expect(navigateTo).not.toHaveBeenCalled()
   })
 })
-
