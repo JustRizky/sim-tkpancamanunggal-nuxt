@@ -1,4 +1,8 @@
 <script setup lang="ts">
+  import { onMounted } from 'vue'
+  import AOS from 'aos'
+  import 'aos/dist/aos.css'
+
   interface HeroSection {
     id: number
     title: string
@@ -27,17 +31,31 @@
   const { data: carousel } = await useAsyncData('carousel', () =>
     $fetch<CarouselItem[]>('/api/carousel')
   )
+
+  onMounted(() => {
+    AOS.init({
+      duration: 800,
+      once: false,
+    })
+  })
 </script>
 
 <template>
-  <section class="relative h-screen w-full bg-white">
+  <section class="relative h-screen w-full bg-white" data-aos="fade-up">
     <img
       v-if="hero?.imageUrl"
       :src="hero.imageUrl"
       alt="Hero Image"
       class="w-full h-full object-cover"
+      data-aos="zoom-in"
     />
-    <img v-else src="/hero.png" alt="Hero Image" class="w-full h-full object-cover opacity-50" />
+    <img
+      v-else
+      src="/hero.png"
+      alt="Hero Image"
+      class="w-full h-full object-cover opacity-50"
+      data-aos="zoom-in"
+    />
 
     <div
       class="absolute top-0 left-0 h-full w-full pointer-events-none"
@@ -46,17 +64,31 @@
       "
     />
 
-    <div class="absolute top-1/2 left-0 -translate-y-1/2 z-10 w-full px-8 md:px-16 lg:px-32">
+    <div
+      class="absolute top-1/2 left-0 -translate-y-1/2 z-10 w-full px-8 md:px-16 lg:px-32"
+      data-aos="fade-right"
+      data-aos-delay="200"
+    >
       <div class="max-w-2xl">
         <h3
           class="inline-block text-lg md:text-xl font-bold text-white mb-2 bg-blue-400 px-4 py-1 rounded-md text-center"
+          data-aos="fade-down"
+          data-aos-delay="400"
         >
           SELAMAT DATANG DI TK PANCA MANUNGGAL
         </h3>
-        <h1 class="text-5xl md:text-6xl font-bold text-blue-900 mb-4">
+        <h1
+          class="text-5xl md:text-6xl font-bold text-blue-900 mb-4"
+          data-aos="fade-up"
+          data-aos-delay="600"
+        >
           {{ hero?.title || 'Belajar & Bermain' }}
         </h1>
-        <p class="text-gray-700 md:text-lg mb-6 leading-relaxed">
+        <p
+          class="text-gray-700 md:text-lg mb-6 leading-relaxed"
+          data-aos="fade-up"
+          data-aos-delay="800"
+        >
           {{
             hero?.paragraph ||
             'Tempat yang menyenangkan dan kreatif di mana anak-anak dapat belajar, bermain, dan tumbuh dengan penuh kasih serta keceriaan setiap hari.'
@@ -66,6 +98,8 @@
           to="/ppdb"
           size="xl"
           class="rounded-full px-8 py-4 font-black bg-yellow-400 hover:bg-yellow-500"
+          data-aos="zoom-in"
+          data-aos-delay="1000"
         >
           Daftarkan Sekarang
         </UButton>
@@ -106,6 +140,8 @@
         :title="program.title"
         :description="program.description"
         :image="program.imageUrl"
+        data-aos="fade-up"
+        :data-aos-delay="index * 200"
       />
     </div>
   </section>
@@ -140,7 +176,7 @@
       </span>
     </h2>
     <div class="mt-10">
-      <Carousel :items="carousel?.map((item) => item.imageUrl)" />
+      <Carousel :items="carousel?.map((item) => item.imageUrl)" data-aos="fade-left" />
     </div>
   </section>
 

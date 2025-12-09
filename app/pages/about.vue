@@ -1,7 +1,41 @@
+<script lang="ts" setup>
+  import { onMounted } from 'vue'
+  import AOS from 'aos'
+  import 'aos/dist/aos.css'
+
+  interface AboutSection {
+    id: number
+    imageUrl: string
+    sejarah: string
+    visi: string
+    misi: string
+  }
+
+  interface Teacher {
+    id: number
+    imageUrl: string
+    name: string
+    role: string
+    tugas: string
+  }
+
+  const { data: about } = await useAsyncData('about', () => $fetch<AboutSection>('/api/about'))
+
+  const { data: teachers } = await useAsyncData('teachers', () =>
+    $fetch<Teacher[]>('/api/teachers')
+  )
+
+  onMounted(() => {
+    AOS.init({
+      duration: 800, // durasi animasi dalam ms
+      once: false, // animasi bisa muncul berulang saat scroll ke atas/bawah
+    })
+  })
+</script>
+
 <template>
   <div class="space-y-16">
     <section
-      v-if="about"
       class="relative flex flex-col md:flex-row items-center justify-center gap-8 min-h-screen px-8 py-16 text-white bg-[url('')] bg-blue-900 bg-repeat bg-[length:300px_300px]"
     >
       <svg
@@ -28,20 +62,41 @@
           </span>
         </h2>
 
-        <p
-          v-for="(sejarah, i) in about?.sejarah.split('|||')"
-          :key="i"
-          class="leading-relaxed text-lg text-justify md:text-center"
-        >
-          {{ sejarah }}
-        </p>
+        <div v-if="about?.sejarah" data-aos="fade-up">
+          <p
+            v-for="(sejarah, i) in about?.sejarah.split('|||')"
+            :key="i"
+            class="leading-relaxed text-lg text-justify md:text-center"
+          >
+            {{ sejarah }}
+          </p>
+        </div>
+
+        <div v-else data-aos="fade-up">
+          <p class="leading-relaxed text-lg text-center text-gray-200">
+            TK Panca Manunggal Surabaya adalah lembaga pendidikan anak usia dini yang berlokasi di
+            Jl Dapuan Baru II/82, Surabaya. Lembaga ini berada di bawah naungan Yayasan Panca
+            Manunggal Surabaya dan melayani pendidikan pra-sekolah dengan komitmen menciptakan
+            lingkungan belajar yang menyenangkan dan kreatif.
+          </p>
+        </div>
       </div>
 
       <div class="hidden sm:flex sm:w-1/2 md:flex md:w-1/2 justify-center">
         <img
+          v-if="about?.imageUrl"
           :src="about.imageUrl"
           alt="Foto Sekolah"
           class="rounded-lg shadow-lg w-4/5 h-auto object-cover border-4 border-white"
+          data-aos="zoom-in"
+        />
+
+        <img
+          v-else
+          src="/sekolah.png"
+          alt="Foto Sekolah Default"
+          class="rounded-lg shadow-lg w-4/5 h-auto object-cover border-4 border-white opacity-70"
+          data-aos="zoom-in"
         />
       </div>
 
@@ -69,15 +124,38 @@
           </span>
         </h2>
 
-        <div class="mb-12">
+        <div class="mb-12" v-if="about" data-aos="fade-up" data-aos-delay="100">
           <h3 class="text-3xl font-bold mb-4 text-gray-700">Visi</h3>
           <p class="text-gray-700 text-lg leading-relaxed">{{ about?.visi }}</p>
         </div>
 
-        <div>
+        <div class="mb-12" v-else data-aos="fade-up" data-aos-delay="100">
+          <h3 class="text-3xl font-bold mb-4 text-gray-700">Visi</h3>
+          <p class="text-gray-700 text-lg leading-relaxed">
+            TK Panca Manunggal mewujudkan anak yang beriman, sehat, mandiri, cerdas, kreatif,
+            komunikatif, mampu bekerjasama, dan cinta tanah air
+          </p>
+        </div>
+
+        <div v-if="about" data-aos="fade-up" data-aos-delay="200">
           <h3 class="text-3xl font-bold mb-4 text-gray-700">Misi</h3>
           <ul class="text-gray-700 text-lg leading-relaxed space-y-4 list-none">
             <li v-for="(misi, i) in about?.misi.split(';')" :key="i">{{ misi }}</li>
+          </ul>
+        </div>
+
+        <div v-else data-aos="fade-up" data-aos-delay="200">
+          <h3 class="text-3xl font-bold mb-4 text-gray-700">Misi</h3>
+          <ul class="text-gray-700 text-lg leading-relaxed space-y-4 list-none">
+            <li>Membiasakan anak berdoa, beribadah dan berakhlak mulia.</li>
+            <li>Menanamkan sikap peduli, toleran dan cinta budaya bangsa.</li>
+            <li>
+              Mengembangkan kemandirian, kesehatan jasmani dan rohani, serta ketrampilan berfikir
+              kritis dan kreatif.
+            </li>
+            <li>
+              Melatih anak berkomunikasi dengan baik dan bekerja sama dalam berbagai kegiatan.
+            </li>
           </ul>
         </div>
       </div>
@@ -96,6 +174,8 @@
         <UCard
           v-for="(teachers, i) in teachers?.filter((t) => t.role === 'Kepala Sekolah')"
           :key="i"
+          data-aos="fade-up"
+          :data-aos-delay="i * 100"
           class="w-full md:w-1/2 mx-auto hover:shadow-2xl transition transform hover:-translate-y-1"
           :ui="{ body: 'flex flex-col items-center text-center space-y-2' }"
         >
@@ -115,6 +195,8 @@
           <UCard
             v-for="(teacher, i) in teachers?.filter((t) => t.role === 'Guru')"
             :key="i"
+            data-aos="fade-up"
+            :data-aos-delay="i * 100"
             class="hover:shadow-2xl transition transform hover:-translate-y-1"
             :ui="{ body: 'flex flex-col items-center text-center space-y-2' }"
           >
@@ -135,6 +217,8 @@
           <UCard
             v-for="(teacher, i) in teachers?.filter((t) => t.role === 'Staff')"
             :key="i"
+            data-aos="fade-up"
+            :data-aos-delay="i * 100"
             class="hover:shadow-2xl transition transform hover:-translate-y-1"
             :ui="{ body: 'flex flex-col items-center text-center space-y-2' }"
           >
@@ -151,27 +235,3 @@
     </section>
   </div>
 </template>
-
-<script lang="ts" setup>
-  interface AboutSection {
-    id: number
-    imageUrl: string
-    sejarah: string
-    visi: string
-    misi: string
-  }
-
-  interface Teacher {
-    id: number
-    imageUrl: string
-    name: string
-    role: string
-    tugas: string
-  }
-
-  const { data: about } = await useAsyncData('about', () => $fetch<AboutSection>('/api/about'))
-
-  const { data: teachers } = await useAsyncData('teachers', () =>
-    $fetch<Teacher[]>('/api/teachers')
-  )
-</script>
