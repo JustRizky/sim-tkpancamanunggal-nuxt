@@ -66,3 +66,42 @@ model Teacher {
         createdAt DateTime @default(now())
         updatedAt DateTime @updatedAt
 }
+
+model Ppdb {
+        id Int @id @default(autoincrement())
+
+        nama            String
+        jk              String
+        nik             String
+        no_kk           String
+        tempat_lahir    String
+        tgl_lahir       String
+        no_akte         String
+        agama           String
+        kewarganegaraan String
+        alamat          String
+        tinggal_bersama String
+        anak_ke         String
+        usia            String
+        no_hp           String
+
+        namaAyah        String
+        nikAyah         String
+        tahunLahirAyah  String
+        pendidikanAyah  String
+        pekerjaanAyah   String
+        penghasilanAyah String
+
+        namaIbu        String
+        nikIbu         String
+        tahunLahirIbu  String
+        pendidikanIbu  String
+        pekerjaanIbu   String
+        penghasilanIbu String
+
+        tinggiBadan   String
+        beratBadan    String
+        lingkarKepala String
+        jarakTempuh   String
+        jumlahSaudara String
+}
