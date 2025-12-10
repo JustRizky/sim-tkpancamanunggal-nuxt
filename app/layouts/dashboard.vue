@@ -4,6 +4,7 @@
   import { useRoute } from 'vue-router'
 
   const route = useRoute()
+  const showLogout = ref(false)
 
   const items = computed<NavigationMenuItem[]>(() => [
     {
@@ -52,6 +53,17 @@
       active: route.path === '/dashboard/contact' ? 'primary' : 'neutral',
     },
   ])
+
+  function toggleLogout() {
+    showLogout.value = !showLogout.value
+  }
+
+  function logout() {
+    const tokenCookie = useCookie('token')
+    tokenCookie.value = null
+
+    navigateTo('/login')
+  }
 </script>
 
 <template>
@@ -97,15 +109,28 @@
       </template>
 
       <template #footer="{ collapsed }">
-        <UButton
-          :avatar="{
-            src: 'https://github.com/benjamincanac.png',
-          }"
-          :label="collapsed ? undefined : 'Admin'"
-          variant="ghost"
-          class="w-full text-blue-900"
-          :block="collapsed"
-        />
+        <div class="relative w-full">
+          <UButton
+            @click="toggleLogout"
+            :avatar="{ src: 'https://github.com/benjamincanac.png' }"
+            :label="collapsed ? undefined : 'Admin'"
+            variant="ghost"
+            class="w-full text-blue-900 hover:bg-yellow-100 hover:text-blue-700 transition-colors duration-200 rounded-md"
+            :block="collapsed"
+          />
+
+          <div v-if="showLogout" class="absolute bottom-full left-0 w-full mb-2 z-50">
+            <UButton
+              color="danger"
+              variant="solid"
+              block
+              class="!bg-red-600 !text-white hover:!bg-red-700"
+              @click="logout"
+            >
+              Logout
+            </UButton>
+          </div>
+        </div>
       </template>
     </UDashboardSidebar>
     <div class="flex-1 overflow-auto h-screen">

@@ -248,7 +248,6 @@
 
         <UFormField label="Jenis Kelamin">
           <USelect
-            :items="jkOptions"
             v-model="form.identitas.jk"
             placeholder="Pilih jenis kelamin"
             :ui="{
