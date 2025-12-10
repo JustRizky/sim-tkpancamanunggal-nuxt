@@ -1,4 +1,74 @@
 <script setup lang="ts">
+  import { ref, reactive } from 'vue'
+  import { z } from 'zod'
+  import { useToast } from '#imports'
+  import { useFetch } from '#app'
+  import { onMounted } from 'vue'
+  import AOS from 'aos'
+  import 'aos/dist/aos.css'
+
+  const toast = useToast()
+
+  const form = reactive({
+    nama: '',
+    email: '',
+    pesan: '',
+  })
+
+  const errors = reactive<{ [key: string]: string }>({})
+
+  const contactSchema = z.object({
+    nama: z.string().min(3, 'Nama minimal 3 karakter'),
+    email: z.string().email('Email tidak valid'),
+    pesan: z.string().min(5, 'Pesan minimal 5 karakter'),
+  })
+
+  const sendMessage = async () => {
+    errors.nama = ''
+    errors.email = ''
+    errors.pesan = ''
+
+    const result = contactSchema.safeParse(form)
+    if (!result.success) {
+      result.error.issues.forEach((issue) => {
+        if (issue.path[0]) errors[issue.path[0]] = issue.message
+      })
+      toast.add({
+        title: 'Validasi Gagal',
+        description: result.error.issues[0].message,
+        color: 'error',
+        duration: 3000,
+      })
+      return
+    }
+
+    try {
+      const { error } = await useFetch('/api/contactMessage', {
+        method: 'POST',
+        body: form,
+      })
+      if (error.value) throw error.value
+
+      toast.add({
+        title: 'Pesan Terkirim',
+        description: `Pesan dari ${form.nama} berhasil dikirim!`,
+        color: 'success',
+        duration: 3000,
+      })
+
+      form.nama = ''
+      form.email = ''
+      form.pesan = ''
+    } catch (err: any) {
+      toast.add({
+        title: 'Gagal Mengirim',
+        description: err.message || 'Terjadi kesalahan',
+        color: 'error',
+        duration: 3000,
+      })
+    }
+  }
+
   const cards = ref([
     {
       title: 'Alamat',
@@ -22,15 +92,12 @@
     },
   ])
 
-  const form = reactive({
-    nama: '',
-    email: '',
-    pesan: '',
+  onMounted(() => {
+    AOS.init({
+      duration: 800,
+      once: false,
+    })
   })
-
-  function sendMessage() {
-    alert(`Pesan dari ${form.nama} telah dikirim!`)
-  }
 </script>
 
 <template>
@@ -62,21 +129,23 @@
         </h2>
       </div>
 
-      <UPageGrid class="relative grid grid-cols-2 md:grid-cols-2 lg:grid-cols-2 gap-8">
-        <UPageCard
-          v-for="(card, index) in cards"
-          :key="index"
-          class="bg-white text-blue-900 rounded-xl shadow-lg hover:shadow-2xl transition transform hover:-translate-y-1 h-[150px]"
-        >
-          <template #default>
-            <div class="flex flex-col items-center justify-center text-center h-full">
-              <UIcon :name="card.icon" class="w-8 h-8 mb-2 flex-shrink-0 mx-auto" />
-              <h3 class="text-lg font-bold mb-1">{{ card.title }}</h3>
-              <p class="text-xs font-medium text-gray-700">{{ card.description }}</p>
-            </div>
-          </template>
-        </UPageCard>
-      </UPageGrid>
+      <div data-aos="fade-up" :data-aos-delay="index * 100">
+        <UPageGrid class="relative grid grid-cols-2 md:grid-cols-2 lg:grid-cols-2 gap-8">
+          <UPageCard
+            v-for="(card, index) in cards"
+            :key="index"
+            class="bg-white text-blue-900 rounded-xl shadow-lg hover:shadow-2xl transition transform hover:-translate-y-1 h-[150px]"
+          >
+            <template #default>
+              <div class="flex flex-col items-center justify-center text-center h-full">
+                <UIcon :name="card.icon" class="w-8 h-8 mb-2 flex-shrink-0 mx-auto" />
+                <h3 class="text-lg font-bold mb-1">{{ card.title }}</h3>
+                <p class="text-xs font-medium text-gray-700">{{ card.description }}</p>
+              </div>
+            </template>
+          </UPageCard>
+        </UPageGrid>
+      </div>
 
       <div class="mt-8">
         <iframe
@@ -85,54 +154,64 @@
           height="300"
           loading="lazy"
           class="rounded-lg shadow-lg"
+          data-aos="fade-up"
+          data-aos-delay="100"
         />
       </div>
     </div>
 
-    <div class="flex-1 bg-white rounded-xl shadow-lg p-8 text-gray-800 w-full max-w-md">
-      <h3 class="text-2xl font-semibold mb-6 text-center text-blue-900">Kirim Pesan</h3>
+    <div class="flex-1 max-w-md w-full" data-aos="fade-left" data-aos-delay="200">
+      <UCard class="p-6 space-y-6">
+        <h2 class="text-2xl font-bold text-center text-blue-900 mb-4">Hubungi Kami</h2>
 
-      <form class="space-y-4" @submit.prevent="sendMessage">
-        <div>
-          <label class="block font-medium mb-1">Nama Lengkap</label>
-          <input
-            v-model="form.nama"
-            type="text"
-            class="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500"
-            placeholder="Masukkan nama anda"
-            required
-          />
-        </div>
+        <UForm class="space-y-4" @submit.prevent="sendMessage">
+          <UFormField label="Nama Lengkap" class="w-full">
+            <UInput
+              v-model="form.nama"
+              placeholder="Masukkan nama anda"
+              class="w-full"
+              :ui="{
+                container: 'border !border-blue-400 rounded-md w-full',
+                base: 'focus:!ring-2 focus:!ring-blue-500 focus:!border-blue-500 w-full',
+              }"
+            />
+            <p v-if="errors.nama" class="text-sm text-red-500">{{ errors.nama }}</p>
+          </UFormField>
 
-        <div>
-          <label class="block font-medium mb-1">Email</label>
-          <input
-            v-model="form.email"
-            type="email"
-            class="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500"
-            placeholder="Masukkan email anda"
-            required
-          />
-        </div>
+          <UFormField label="Email" class="w-full">
+            <UInput
+              v-model="form.email"
+              type="email"
+              placeholder="Masukkan email anda"
+              class="w-full"
+              :ui="{
+                container: 'border !border-blue-400 rounded-md w-full',
+                base: 'focus:!ring-2 focus:!ring-blue-500 focus:!border-blue-500 w-full',
+              }"
+            />
+            <p v-if="errors.email" class="text-sm text-red-500">{{ errors.email }}</p>
+          </UFormField>
 
-        <div>
-          <label class="block font-medium mb-1">Pesan</label>
-          <textarea
-            v-model="form.pesan"
-            rows="4"
-            class="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500"
-            placeholder="Tulis pesan anda di sini..."
-            required
-          />
-        </div>
+          <UFormField label="Pesan" class="w-full">
+            <UTextarea
+              v-model="form.pesan"
+              placeholder="Tulis pesan anda di sini..."
+              class="w-full"
+              :ui="{
+                container: 'border !border-blue-400 rounded-md w-full',
+                base: 'focus:!ring-2 focus:!ring-blue-500 focus:!border-blue-500 w-full',
+              }"
+            />
+            <p v-if="errors.pesan" class="text-sm text-red-500">{{ errors.pesan }}</p>
+          </UFormField>
 
-        <button
-          type="submit"
-          class="w-full bg-blue-900 text-white py-2 rounded-md font-semibold hover:bg-blue-800 transition"
-        >
-          Kirim Pesan
-        </button>
-      </form>
+          <div class="flex justify-center">
+            <UButton type="submit" color="primary" class="px-10 py-3 text-lg font-semibold">
+              Kirim Pesan
+            </UButton>
+          </div>
+        </UForm>
+      </UCard>
     </div>
   </section>
 </template>
