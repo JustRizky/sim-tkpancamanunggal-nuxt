@@ -104,6 +104,8 @@ model Ppdb {
         lingkarKepala String
         jarakTempuh   String
         jumlahSaudara String
+        buktiPembayaran String?
+        lampiran       String?
         createdAt     DateTime @default(now())
 }
 

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { ref, reactive } from 'vue'
+  import { ref, reactive, watch } from 'vue'
   import { z } from 'zod'
   import { useToast } from '#imports'
 
@@ -11,6 +11,7 @@
     identitas: {},
     orangTua: {},
     periodik: {},
+    dokumen: {},
   })
 
   const form = reactive({
@@ -51,6 +52,10 @@
       jarakTempuh: '',
       jumlahSaudara: '',
     },
+    dokumen: {
+      buktiPembayaran: null as File | null,
+      lampiran: null as File | null,
+    },
   })
 
   const jkOptions = ['Laki-laki', 'Perempuan']
@@ -77,8 +82,7 @@
 
     no_akte: z
       .string()
-      .regex(/^[0-9]+$/, { message: 'No Akte hanya angka' })
-      .length(20, { message: 'No Akte harus 20 digit' }),
+      .max(20, { message: 'No Akte maksimal 20 karakter' }),
 
     agama: z.string().min(1, { message: 'Agama wajib diisi' }),
     kewarganegaraan: z.string().min(1, { message: 'Isi kewarganegaraan' }),
@@ -115,7 +119,10 @@
       .refine((v) => +v >= 1950 && +v <= 2020, 'Tahun lahir tidak valid'),
     pendidikanAyah: z.string().min(1, 'Pendidikan Ayah wajib diisi'),
     pekerjaanAyah: z.string().min(1, 'Pekerjaan Ayah wajib diisi'),
-    penghasilanAyah: z.string().min(1, 'Penghasilan Ayah wajib dipilih'),
+    penghasilanAyah: z
+      .string()
+      .min(1, 'Penghasilan Ayah wajib diisi')
+      .regex(/^[0-9]+$/, 'Penghasilan Ayah hanya boleh angka'),
 
     namaIbu: z.string().min(1, 'Nama Ibu wajib diisi'),
     nikIbu: z
@@ -128,7 +135,10 @@
       .refine((v) => +v >= 1950 && +v <= 2020, 'Tahun lahir tidak valid'),
     pendidikanIbu: z.string().min(1, 'Pendidikan Ibu wajib diisi'),
     pekerjaanIbu: z.string().min(1, 'Pekerjaan Ibu wajib diisi'),
-    penghasilanIbu: z.string().min(1, 'Penghasilan Ibu wajib dipilih'),
+    penghasilanIbu: z
+      .string()
+      .min(1, 'Penghasilan Ibu wajib diisi')
+      .regex(/^[0-9]+$/, 'Penghasilan Ibu hanya boleh angka'),
   })
 
   const periodikSchema = z.object({
@@ -159,9 +169,17 @@
   })
 
   const stepToKey = () =>
-    step.value === 1 ? 'identitas' : step.value === 2 ? 'orangTua' : 'periodik'
+    step.value === 1
+      ? 'identitas'
+      : step.value === 2
+        ? 'orangTua'
+        : step.value === 3
+          ? 'periodik'
+          : 'dokumen'
 
   const validateStep = () => {
+    if (step.value === 4) return true
+
     const key = stepToKey()
     const schema =
       step.value === 1 ? identitasSchema : step.value === 2 ? orangTuaSchema : periodikSchema
@@ -203,6 +221,13 @@
     Object.entries(form.orangTua).forEach(([k, v]) => body.append(k, v))
     Object.entries(form.periodik).forEach(([k, v]) => body.append(k, v))
 
+    if (form.dokumen.buktiPembayaran) {
+      body.append('buktiPembayaran', form.dokumen.buktiPembayaran)
+    }
+    if (form.dokumen.lampiran) {
+      body.append('lampiran', form.dokumen.lampiran)
+    }
+
     const { error } = await useFetch('/api/ppdb', { method: 'POST', body })
 
     if (error.value) {
@@ -221,6 +246,283 @@
     })
 
     step.value = 1
+    form.dokumen.buktiPembayaran = null
+    form.dokumen.lampiran = null
+  }
+
+  const handleNumericInput = (value: string, maxLength: number = 16) => {
+    const numericOnly = value.replace(/\D/g, '')
+    return numericOnly.slice(0, maxLength)
+  }
+
+  watch(
+    () => form.identitas.nik,
+    (newValue) => {
+      const filtered = handleNumericInput(newValue, 16)
+      if (filtered !== newValue) {
+        form.identitas.nik = filtered
+      }
+    }
+  )
+
+  watch(
+    () => form.identitas.no_kk,
+    (newValue) => {
+      const filtered = handleNumericInput(newValue, 16)
+      if (filtered !== newValue) {
+        form.identitas.no_kk = filtered
+      }
+    }
+  )
+
+  watch(
+    () => form.identitas.anak_ke,
+    (newValue) => {
+      const filtered = handleNumericInput(newValue, 2)
+      if (filtered !== newValue) {
+        form.identitas.anak_ke = filtered
+      }
+    }
+  )
+
+  watch(
+    () => form.identitas.usia,
+    (newValue) => {
+      const filtered = handleNumericInput(newValue, 2)
+      if (filtered !== newValue) {
+        form.identitas.usia = filtered
+      }
+    }
+  )
+
+  watch(
+    () => form.identitas.no_hp,
+    (newValue) => {
+      const filtered = handleNumericInput(newValue, 13)
+      if (filtered !== newValue) {
+        form.identitas.no_hp = filtered
+      }
+    }
+  )
+
+  watch(
+    () => form.orangTua.nikAyah,
+    (newValue) => {
+      const filtered = handleNumericInput(newValue, 16)
+      if (filtered !== newValue) {
+        form.orangTua.nikAyah = filtered
+      }
+    }
+  )
+
+  watch(
+    () => form.orangTua.nikIbu,
+    (newValue) => {
+      const filtered = handleNumericInput(newValue, 16)
+      if (filtered !== newValue) {
+        form.orangTua.nikIbu = filtered
+      }
+    }
+  )
+
+  watch(
+    () => form.orangTua.tahunLahirAyah,
+    (newValue) => {
+      const filtered = handleNumericInput(newValue, 4)
+      if (filtered !== newValue) {
+        form.orangTua.tahunLahirAyah = filtered
+      }
+    }
+  )
+
+  watch(
+    () => form.orangTua.tahunLahirIbu,
+    (newValue) => {
+      const filtered = handleNumericInput(newValue, 4)
+      if (filtered !== newValue) {
+        form.orangTua.tahunLahirIbu = filtered
+      }
+    }
+  )
+
+  watch(
+    () => form.orangTua.penghasilanAyah,
+    (newValue) => {
+      if (filtered !== newValue) {
+        form.orangTua.penghasilanAyah = filtered
+      }
+    }
+  )
+
+  watch(
+    () => form.orangTua.penghasilanIbu,
+    (newValue) => {
+      if (filtered !== newValue) {
+        form.orangTua.penghasilanIbu = filtered
+      }
+    }
+  )
+
+  watch(
+    () => form.periodik.tinggiBadan,
+    (newValue) => {
+      const filtered = handleNumericInput(newValue, 3)
+      if (filtered !== newValue) {
+        form.periodik.tinggiBadan = filtered
+      }
+    }
+  )
+
+  watch(
+    () => form.periodik.beratBadan,
+    (newValue) => {
+      const filtered = handleNumericInput(newValue, 3)
+      if (filtered !== newValue) {
+        form.periodik.beratBadan = filtered
+      }
+    }
+  )
+
+  watch(
+    () => form.periodik.lingkarKepala,
+    (newValue) => {
+      const filtered = handleNumericInput(newValue, 3)
+      if (filtered !== newValue) {
+        form.periodik.lingkarKepala = filtered
+      }
+    }
+  )
+
+  watch(
+    () => form.periodik.jarakTempuh,
+    (newValue) => {
+      const filtered = handleNumericInput(newValue, 3)
+      if (filtered !== newValue) {
+        form.periodik.jarakTempuh = filtered
+      }
+    }
+  )
+
+  watch(
+    () => form.periodik.jumlahSaudara,
+    (newValue) => {
+      const filtered = handleNumericInput(newValue, 2)
+      if (filtered !== newValue) {
+        form.periodik.jumlahSaudara = filtered
+      }
+    }
+  )
+
+  const handleNikInput = (event: Event) => {
+    const target = (event.target as HTMLInputElement) || (event.currentTarget as HTMLInputElement)
+    if (target) {
+      form.identitas.nik = handleNumericInput(target.value, 16)
+    }
+  }
+
+  const handleNoKkInput = (event: Event) => {
+    const target = (event.target as HTMLInputElement) || (event.currentTarget as HTMLInputElement)
+    if (target) {
+      form.identitas.no_kk = handleNumericInput(target.value, 16)
+    }
+  }
+
+  const handleAnakKeInput = (event: Event) => {
+    const target = (event.target as HTMLInputElement) || (event.currentTarget as HTMLInputElement)
+    if (target) {
+      form.identitas.anak_ke = handleNumericInput(target.value, 2)
+    }
+  }
+
+  const handleUsiaInput = (event: Event) => {
+    const target = (event.target as HTMLInputElement) || (event.currentTarget as HTMLInputElement)
+    if (target) {
+      form.identitas.usia = handleNumericInput(target.value, 2)
+    }
+  }
+
+  const handleNoHpInput = (event: Event) => {
+    const target = (event.target as HTMLInputElement) || (event.currentTarget as HTMLInputElement)
+    if (target) {
+      form.identitas.no_hp = handleNumericInput(target.value, 13)
+    }
+  }
+
+  const handleNikAyahInput = (event: Event) => {
+    const target = (event.target as HTMLInputElement) || (event.currentTarget as HTMLInputElement)
+    if (target) {
+      form.orangTua.nikAyah = handleNumericInput(target.value, 16)
+    }
+  }
+
+  const handleNikIbuInput = (event: Event) => {
+    const target = (event.target as HTMLInputElement) || (event.currentTarget as HTMLInputElement)
+    if (target) {
+      form.orangTua.nikIbu = handleNumericInput(target.value, 16)
+    }
+  }
+
+  const handleTahunLahirAyahInput = (event: Event) => {
+    const target = (event.target as HTMLInputElement) || (event.currentTarget as HTMLInputElement)
+    if (target) {
+      form.orangTua.tahunLahirAyah = handleNumericInput(target.value, 4)
+    }
+  }
+
+  const handleTahunLahirIbuInput = (event: Event) => {
+    const target = (event.target as HTMLInputElement) || (event.currentTarget as HTMLInputElement)
+    if (target) {
+      form.orangTua.tahunLahirIbu = handleNumericInput(target.value, 4)
+    }
+  }
+
+  const handlePenghasilanAyahInput = (event: Event) => {
+    const target = (event.target as HTMLInputElement) || (event.currentTarget as HTMLInputElement)
+    if (target) {
+      form.orangTua.penghasilanAyah = handleNumericInput(target.value, 20)
+    }
+  }
+
+  const handlePenghasilanIbuInput = (event: Event) => {
+    const target = (event.target as HTMLInputElement) || (event.currentTarget as HTMLInputElement)
+    if (target) {
+      form.orangTua.penghasilanIbu = handleNumericInput(target.value, 20)
+    }
+  }
+
+  const handleTinggiBadanInput = (event: Event) => {
+    const target = (event.target as HTMLInputElement) || (event.currentTarget as HTMLInputElement)
+    if (target) {
+      form.periodik.tinggiBadan = handleNumericInput(target.value, 3)
+    }
+  }
+
+  const handleBeratBadanInput = (event: Event) => {
+    const target = (event.target as HTMLInputElement) || (event.currentTarget as HTMLInputElement)
+    if (target) {
+      form.periodik.beratBadan = handleNumericInput(target.value, 3)
+    }
+  }
+
+  const handleLingkarKepalaInput = (event: Event) => {
+    const target = (event.target as HTMLInputElement) || (event.currentTarget as HTMLInputElement)
+    if (target) {
+      form.periodik.lingkarKepala = handleNumericInput(target.value, 3)
+    }
+  }
+
+  const handleJarakTempuhInput = (event: Event) => {
+    const target = (event.target as HTMLInputElement) || (event.currentTarget as HTMLInputElement)
+    if (target) {
+      form.periodik.jarakTempuh = handleNumericInput(target.value, 3)
+    }
+  }
+
+  const handleJumlahSaudaraInput = (event: Event) => {
+    const target = (event.target as HTMLInputElement) || (event.currentTarget as HTMLInputElement)
+    if (target) {
+      form.periodik.jumlahSaudara = handleNumericInput(target.value, 2)
+    }
   }
 </script>
 
@@ -264,6 +566,8 @@
             <UInput
               v-model="form.identitas.nik"
               placeholder="16 digit NIK"
+              maxlength="16"
+              @input="handleNikInput"
               :ui="{
                 container: 'border !border-blue-400 rounded-md',
                 base: 'focus:!ring-2 focus:!ring-blue-500 focus:!border-blue-500',
@@ -278,6 +582,8 @@
             <UInput
               v-model="form.identitas.no_kk"
               placeholder="16 digit KK"
+              maxlength="16"
+              @input="handleNoKkInput"
               :ui="{
                 container: 'border !border-blue-400 rounded-md',
                 base: 'focus:!ring-2 focus:!ring-blue-500 focus:!border-blue-500',
@@ -322,6 +628,7 @@
           <UInput
             v-model="form.identitas.no_akte"
             placeholder="Nomor akte kelahiran"
+            maxlength="20"
             :ui="{
               container: 'border !border-blue-400 rounded-md',
               base: 'focus:!ring-2 focus:!ring-blue-500 focus:!border-blue-500',
@@ -395,6 +702,8 @@
             <UInput
               v-model="form.identitas.anak_ke"
               placeholder="Contoh: 1"
+              maxlength="2"
+              @input="handleAnakKeInput"
               :ui="{
                 container: 'border !border-blue-400 rounded-md',
                 base: 'focus:!ring-2 focus:!ring-blue-500 focus:!border-blue-500',
@@ -409,6 +718,8 @@
             <UInput
               v-model="form.identitas.usia"
               placeholder="Contoh: 5"
+              maxlength="2"
+              @input="handleUsiaInput"
               :ui="{
                 container: 'border !border-blue-400 rounded-md',
                 base: 'focus:!ring-2 focus:!ring-blue-500 focus:!border-blue-500',
@@ -423,6 +734,8 @@
             <UInput
               v-model="form.identitas.no_hp"
               placeholder="Nomor handphone aktif"
+              maxlength="13"
+              @input="handleNoHpInput"
               :ui="{
                 container: 'border !border-blue-400 rounded-md',
                 base: 'focus:!ring-2 focus:!ring-blue-500 focus:!border-blue-500',
@@ -465,6 +778,8 @@
           <UInput
             v-model="form.orangTua.nikAyah"
             placeholder="16 digit NIK Ayah"
+            maxlength="16"
+            @input="handleNikAyahInput"
             :ui="{
               container: 'border !border-blue-400 rounded-md',
               base: 'focus:!ring-2 focus:!ring-blue-500 focus:!border-blue-500',
@@ -480,6 +795,8 @@
             <UInput
               v-model="form.orangTua.tahunLahirAyah"
               placeholder="Contoh: 1980"
+              maxlength="4"
+              @input="handleTahunLahirAyahInput"
               :ui="{
                 container: 'border !border-blue-400 rounded-md',
                 base: 'focus:!ring-2 focus:!ring-blue-500 focus:!border-blue-500',
@@ -524,6 +841,8 @@
           <UInput
             v-model="form.orangTua.penghasilanAyah"
             placeholder="Penghasilan per bulan"
+            maxlength="20"
+            @input="handlePenghasilanAyahInput"
             :ui="{
               container: 'border !border-blue-400 rounded-md',
               base: 'focus:!ring-2 focus:!ring-blue-500 focus:!border-blue-500',
@@ -554,6 +873,8 @@
           <UInput
             v-model="form.orangTua.nikIbu"
             placeholder="16 digit NIK Ibu"
+            maxlength="16"
+            @input="handleNikIbuInput"
             :ui="{
               container: 'border !border-blue-400 rounded-md',
               base: 'focus:!ring-2 focus:!ring-blue-500 focus:!border-blue-500',
@@ -569,6 +890,8 @@
             <UInput
               v-model="form.orangTua.tahunLahirIbu"
               placeholder="Contoh: 1982"
+              maxlength="4"
+              @input="handleTahunLahirIbuInput"
               :ui="{
                 container: 'border !border-blue-400 rounded-md',
                 base: 'focus:!ring-2 focus:!ring-blue-500 focus:!border-blue-500',
@@ -613,6 +936,8 @@
           <UInput
             v-model="form.orangTua.penghasilanIbu"
             placeholder="Penghasilan per bulan"
+            maxlength="20"
+            @input="handlePenghasilanIbuInput"
             :ui="{
               container: 'border !border-blue-400 rounded-md',
               base: 'focus:!ring-2 focus:!ring-blue-500 focus:!border-blue-500',
@@ -640,6 +965,8 @@
             <UInput
               v-model="form.periodik.tinggiBadan"
               placeholder="Contoh: 110"
+              maxlength="3"
+              @input="handleTinggiBadanInput"
               :ui="{
                 container: 'border !border-blue-400 rounded-md',
                 base: 'focus:!ring-2 focus:!ring-blue-500 focus:!border-blue-500',
@@ -654,6 +981,8 @@
             <UInput
               v-model="form.periodik.beratBadan"
               placeholder="Contoh: 20"
+              maxlength="3"
+              @input="handleBeratBadanInput"
               :ui="{
                 container: 'border !border-blue-400 rounded-md',
                 base: 'focus:!ring-2 focus:!ring-blue-500 focus:!border-blue-500',
@@ -668,6 +997,8 @@
             <UInput
               v-model="form.periodik.lingkarKepala"
               placeholder="Contoh: 45"
+              maxlength="3"
+              @input="handleLingkarKepalaInput"
               :ui="{
                 container: 'border !border-blue-400 rounded-md',
                 base: 'focus:!ring-2 focus:!ring-blue-500 focus:!border-blue-500',
@@ -683,6 +1014,8 @@
           <UInput
             v-model="form.periodik.jarakTempuh"
             placeholder="Contoh: 3"
+            maxlength="3"
+            @input="handleJarakTempuhInput"
             :ui="{
               container: 'border !border-blue-400 rounded-md',
               base: 'focus:!ring-2 focus:!ring-blue-500 focus:!border-blue-500',
@@ -697,6 +1030,8 @@
           <UInput
             v-model="form.periodik.jumlahSaudara"
             placeholder="Contoh: 2"
+            maxlength="2"
+            @input="handleJumlahSaudaraInput"
             :ui="{
               container: 'border !border-blue-400 rounded-md',
               base: 'focus:!ring-2 focus:!ring-blue-500 focus:!border-blue-500',
@@ -704,6 +1039,64 @@
           />
           <p v-if="errors.periodik.jumlahSaudara" class="text-sm text-red-500">
             {{ errors.periodik.jumlahSaudara }}
+          </p>
+        </UFormField>
+
+        <div class="flex justify-between">
+          <UButton color="secondary" @click="prevStep">Back</UButton>
+          <UButton color="success" @click="nextStep">Next</UButton>
+        </div>
+      </UForm>
+    </UCard>
+
+    <!-- ================= STEP 4 ================= -->
+    <UCard v-if="step === 4" class="space-y-4 p-6">
+      <USeparator label="UPLOAD DOKUMEN" size="lg" />
+
+      <UForm class="space-y-4">
+        <UFormField label="Bukti Pembayaran">
+          <input
+            type="file"
+            accept="image/*,.pdf"
+            @change="(e) => {
+              const target = e.target as HTMLInputElement
+              if (target.files && target.files[0]) {
+                form.dokumen.buktiPembayaran = target.files[0]
+              }
+            }"
+            class="w-full p-2 border border-blue-400 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          />
+          <p class="text-sm text-gray-500 mt-1">
+            Format: JPG, PNG, atau PDF (Maksimal 5MB)
+          </p>
+          <p v-if="form.dokumen.buktiPembayaran" class="text-sm text-green-600 mt-1">
+            File terpilih: {{ form.dokumen.buktiPembayaran.name }}
+          </p>
+          <p v-if="errors.dokumen.buktiPembayaran" class="text-sm text-red-500">
+            {{ errors.dokumen.buktiPembayaran }}
+          </p>
+        </UFormField>
+
+        <UFormField label="Lampiran (Opsional)">
+          <input
+            type="file"
+            accept="image/*,.pdf"
+            @change="(e) => {
+              const target = e.target as HTMLInputElement
+              if (target.files && target.files[0]) {
+                form.dokumen.lampiran = target.files[0]
+              }
+            }"
+            class="w-full p-2 border border-blue-400 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          />
+          <p class="text-sm text-gray-500 mt-1">
+            Format: JPG, PNG, atau PDF (Maksimal 5MB)
+          </p>
+          <p v-if="form.dokumen.lampiran" class="text-sm text-green-600 mt-1">
+            File terpilih: {{ form.dokumen.lampiran.name }}
+          </p>
+          <p v-if="errors.dokumen.lampiran" class="text-sm text-red-500">
+            {{ errors.dokumen.lampiran }}
           </p>
         </UFormField>
 

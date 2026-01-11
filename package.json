@@ -17,7 +17,13 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "-----db-----": "exit 0",
+    "db:setup": "bunx prisma migrate dev && bunx prisma generate && bunx prisma db seed",
+    "db:migrate": "bunx prisma migrate dev",
+    "db:generate": "bunx prisma generate",
+    "db:seed": "bunx prisma db seed",
+    "db:reset": "bunx prisma migrate reset",
     "db:deploy": "bunx prisma migrate deploy && bunx prisma generate",
+    "db:studio": "bunx prisma studio",
     "-----TEST-----": "exit 0",
     "test": "vitest",
     "test:ui": "vitest --ui",
@@ -60,5 +66,8 @@
     "ts-node": "^10.9.2",
     "vite-tsconfig-paths": "^5.1.4",
     "vitest": "^4.0.7"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
   }
 }

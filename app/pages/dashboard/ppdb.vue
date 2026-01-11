@@ -54,6 +54,8 @@
             <th class="border p-2">Anak Ke</th>
             <th class="border p-2">Usia</th>
             <th class="border p-2">No HP</th>
+            <th class="border p-2">Bukti Pembayaran</th>
+            <th class="border p-2">Lampiran</th>
             <th class="border p-2">Aksi</th>
           </tr>
         </thead>
@@ -73,6 +75,28 @@
             <td class="border p-2">{{ item.anak_ke }}</td>
             <td class="border p-2">{{ item.usia }}</td>
             <td class="border p-2">{{ item.no_hp }}</td>
+            <td class="border p-2">
+              <a
+                v-if="item.buktiPembayaran"
+                :href="item.buktiPembayaran"
+                target="_blank"
+                class="text-blue-500 hover:underline"
+              >
+                Lihat File
+              </a>
+              <span v-else class="text-gray-400">-</span>
+            </td>
+            <td class="border p-2">
+              <a
+                v-if="item.lampiran"
+                :href="item.lampiran"
+                target="_blank"
+                class="text-blue-500 hover:underline"
+              >
+                Lihat File
+              </a>
+              <span v-else class="text-gray-400">-</span>
+            </td>
             <td class="border p-2 flex gap-2">
               <button class="px-2 py-1 bg-blue-500 text-white rounded" @click="editItem(item.id)">
                 Edit

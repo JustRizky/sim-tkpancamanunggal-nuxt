@@ -1,7 +1,14 @@
 import { PrismaClient } from '@prisma/client'
 import { readMultipartFormData } from 'h3'
+import { v2 as cloudinary } from 'cloudinary'
 
 const prisma = new PrismaClient()
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+})
 
 export default defineEventHandler(async (event) => {
   const method = event.node.req.method
@@ -16,6 +23,41 @@ export default defineEventHandler(async (event) => {
       const parts = await readMultipartFormData(event)
 
       const get = (key: string) => parts.find((p) => p.name === key)?.data.toString() || ''
+      const getFile = (key: string) => parts.find((p) => p.name === key && p.filename)
+
+      // Upload bukti pembayaran
+      let buktiPembayaranUrl = ''
+      const buktiPembayaranFile = getFile('buktiPembayaran')
+      if (buktiPembayaranFile) {
+        const uploadResult = await new Promise<any>((resolve, reject) => {
+          const uploadStream = cloudinary.uploader.upload_stream(
+            { folder: 'ppdb/bukti-pembayaran', resource_type: 'auto' },
+            (error, result) => {
+              if (error) reject(error)
+              else resolve(result)
+            }
+          )
+          uploadStream.end(buktiPembayaranFile.data)
+        })
+        buktiPembayaranUrl = uploadResult.secure_url
+      }
+
+      // Upload lampiran
+      let lampiranUrl = ''
+      const lampiranFile = getFile('lampiran')
+      if (lampiranFile) {
+        const uploadResult = await new Promise<any>((resolve, reject) => {
+          const uploadStream = cloudinary.uploader.upload_stream(
+            { folder: 'ppdb/lampiran', resource_type: 'auto' },
+            (error, result) => {
+              if (error) reject(error)
+              else resolve(result)
+            }
+          )
+          uploadStream.end(lampiranFile.data)
+        })
+        lampiranUrl = uploadResult.secure_url
+      }
 
       const newEntry = await prisma.ppdb.create({
         data: {
@@ -57,6 +99,10 @@ export default defineEventHandler(async (event) => {
           lingkarKepala: get('lingkarKepala'),
           jarakTempuh: get('jarakTempuh'),
           jumlahSaudara: get('jumlahSaudara'),
+
+          // File
+          buktiPembayaran: buktiPembayaranUrl || null,
+          lampiran: lampiranUrl || null,
         },
       })
 
@@ -69,12 +115,47 @@ export default defineEventHandler(async (event) => {
 
       const parts = await readMultipartFormData(event)
       const get = (key: string) => parts.find((p) => p.name === key)?.data.toString() || ''
+      const getFile = (key: string) => parts.find((p) => p.name === key && p.filename)
 
       const exists = await prisma.ppdb.findUnique({
         where: { id: Number(id) },
       })
 
       if (!exists) return { message: 'Data tidak ditemukan' }
+
+      // Upload bukti pembayaran jika ada file baru
+      let buktiPembayaranUrl = exists.buktiPembayaran || ''
+      const buktiPembayaranFile = getFile('buktiPembayaran')
+      if (buktiPembayaranFile) {
+        const uploadResult = await new Promise<any>((resolve, reject) => {
+          const uploadStream = cloudinary.uploader.upload_stream(
+            { folder: 'ppdb/bukti-pembayaran', resource_type: 'auto' },
+            (error, result) => {
+              if (error) reject(error)
+              else resolve(result)
+            }
+          )
+          uploadStream.end(buktiPembayaranFile.data)
+        })
+        buktiPembayaranUrl = uploadResult.secure_url
+      }
+
+      // Upload lampiran jika ada file baru
+      let lampiranUrl = exists.lampiran || ''
+      const lampiranFile = getFile('lampiran')
+      if (lampiranFile) {
+        const uploadResult = await new Promise<any>((resolve, reject) => {
+          const uploadStream = cloudinary.uploader.upload_stream(
+            { folder: 'ppdb/lampiran', resource_type: 'auto' },
+            (error, result) => {
+              if (error) reject(error)
+              else resolve(result)
+            }
+          )
+          uploadStream.end(lampiranFile.data)
+        })
+        lampiranUrl = uploadResult.secure_url
+      }
 
       const updated = await prisma.ppdb.update({
         where: { id: Number(id) },
@@ -117,6 +198,10 @@ export default defineEventHandler(async (event) => {
           lingkarKepala: get('lingkarKepala'),
           jarakTempuh: get('jarakTempuh'),
           jumlahSaudara: get('jumlahSaudara'),
+
+          // File
+          buktiPembayaran: buktiPembayaranUrl || null,
+          lampiran: lampiranUrl || null,
         },
       })
 
