@@ -7,12 +7,10 @@ export default defineEventHandler(async (event) => {
 
   switch (method) {
     case 'GET': {
-      // Get active academic year
       let activeYear = await prisma.academicYear.findFirst({
         where: { isActive: true },
       })
 
-      // If no active year exists, create default one
       if (!activeYear) {
         const currentYear = new Date().getFullYear()
         const nextYear = currentYear + 1
@@ -38,7 +36,6 @@ export default defineEventHandler(async (event) => {
         return { message: 'Tahun ajaran dan semester wajib diisi' }
       }
 
-      // Update academic year
       const updated = await prisma.academicYear.upsert({
         where: { id: 1 },
         update: {
