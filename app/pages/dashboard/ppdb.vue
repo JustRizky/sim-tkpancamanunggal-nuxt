@@ -425,6 +425,62 @@
                 </div>
                 <span v-else class="text-gray-400 text-sm">Tidak ada file</span>
               </div>
+
+              <div>
+                <p class="text-sm text-gray-600 mb-1">Kartu Keluarga:</p>
+                <div v-if="selectedItem.kartuKeluarga">
+                  <a
+                    :href="selectedItem.kartuKeluarga"
+                    target="_blank"
+                    class="text-blue-500 hover:underline inline-flex items-center gap-1"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-4 w-4"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                      />
+                    </svg>
+                    Lihat File
+                  </a>
+                </div>
+                <span v-else class="text-gray-400 text-sm">Tidak ada file</span>
+              </div>
+
+              <div>
+                <p class="text-sm text-gray-600 mb-1">Akte Kelahiran:</p>
+                <div v-if="selectedItem.akteKelahiran">
+                  <a
+                    :href="selectedItem.akteKelahiran"
+                    target="_blank"
+                    class="text-blue-500 hover:underline inline-flex items-center gap-1"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-4 w-4"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                      />
+                    </svg>
+                    Lihat File
+                  </a>
+                </div>
+                <span v-else class="text-gray-400 text-sm">Tidak ada file</span>
+              </div>
             </div>
           </div>
         </div>

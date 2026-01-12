@@ -11,43 +11,44 @@ cloudinary.config({
 })
 
 export default defineEventHandler(async (event) => {
-  const method = event.node.req.method
+  try {
+    const method = event.node.req.method
 
-  switch (method) {
-    case 'GET': {
-      const query = getQuery(event)
-      const where: any = {}
+    switch (method) {
+      case 'GET': {
+        const query = getQuery(event)
+        const where: any = {}
 
-      // Filter berdasarkan status verifikasi
-      if (query.isVerified !== undefined) {
-        where.isVerified = query.isVerified === 'true'
+        // Filter berdasarkan status verifikasi
+        if (query.isVerified !== undefined) {
+          where.isVerified = query.isVerified === 'true'
+        }
+
+        const data = await prisma.ppdb.findMany({
+          where,
+          orderBy: {
+            createdAt: 'desc',
+          },
+        })
+        return data
       }
 
-      const data = await prisma.ppdb.findMany({
-        where,
-        orderBy: {
-          createdAt: 'desc',
-        },
-      })
-      return data
-    }
+      case 'POST': {
+        const parts = await readMultipartFormData(event)
 
-    case 'POST': {
-      const parts = await readMultipartFormData(event)
+        const get = (key: string) => parts.find((p) => p.name === key)?.data.toString() || ''
+        const getFile = (key: string) => parts.find((p) => p.name === key && p.filename)
 
-      const get = (key: string) => parts.find((p) => p.name === key)?.data.toString() || ''
-      const getFile = (key: string) => parts.find((p) => p.name === key && p.filename)
-
-      // Upload bukti pembayaran
-      let buktiPembayaranUrl = ''
-      const buktiPembayaranFile = getFile('buktiPembayaran')
-      if (buktiPembayaranFile) {
-        const uploadResult = await new Promise<any>((resolve, reject) => {
-          const uploadStream = cloudinary.uploader.upload_stream(
-            { folder: 'ppdb/bukti-pembayaran', resource_type: 'auto' },
-            (error, result) => {
-              if (error) reject(error)
-              else resolve(result)
+        // Upload bukti pembayaran
+        let buktiPembayaranUrl = ''
+        const buktiPembayaranFile = getFile('buktiPembayaran')
+        if (buktiPembayaranFile) {
+          const uploadResult = await new Promise<any>((resolve, reject) => {
+            const uploadStream = cloudinary.uploader.upload_stream(
+              { folder: 'ppdb/bukti-pembayaran', resource_type: 'auto' },
+              (error, result) => {
+                if (error) reject(error)
+                else resolve(result)
             }
           )
           uploadStream.end(buktiPembayaranFile.data)
@@ -70,6 +71,40 @@ export default defineEventHandler(async (event) => {
           uploadStream.end(lampiranFile.data)
         })
         lampiranUrl = uploadResult.secure_url
+      }
+
+      // Upload kartu keluarga
+      let kartuKeluargaUrl = ''
+      const kartuKeluargaFile = getFile('kartuKeluarga')
+      if (kartuKeluargaFile) {
+        const uploadResult = await new Promise<any>((resolve, reject) => {
+          const uploadStream = cloudinary.uploader.upload_stream(
+            { folder: 'ppdb/kartu-keluarga', resource_type: 'auto' },
+            (error, result) => {
+              if (error) reject(error)
+              else resolve(result)
+            }
+          )
+          uploadStream.end(kartuKeluargaFile.data)
+        })
+        kartuKeluargaUrl = uploadResult.secure_url
+      }
+
+      // Upload akte kelahiran
+      let akteKelahiranUrl = ''
+      const akteKelahiranFile = getFile('akteKelahiran')
+      if (akteKelahiranFile) {
+        const uploadResult = await new Promise<any>((resolve, reject) => {
+          const uploadStream = cloudinary.uploader.upload_stream(
+            { folder: 'ppdb/akte-kelahiran', resource_type: 'auto' },
+            (error, result) => {
+              if (error) reject(error)
+              else resolve(result)
+            }
+          )
+          uploadStream.end(akteKelahiranFile.data)
+        })
+        akteKelahiranUrl = uploadResult.secure_url
       }
 
       // Get active academic year
@@ -121,6 +156,8 @@ export default defineEventHandler(async (event) => {
           // File
           buktiPembayaran: buktiPembayaranUrl || null,
           lampiran: lampiranUrl || null,
+          kartuKeluarga: kartuKeluargaUrl || null,
+          akteKelahiran: akteKelahiranUrl || null,
           isVerified: get('isVerified') === 'true',
           verifiedAt: get('isVerified') === 'true' ? new Date() : null,
           academicYear: activeAcademicYear?.year || '2024/2025',
@@ -191,6 +228,40 @@ export default defineEventHandler(async (event) => {
         lampiranUrl = uploadResult.secure_url
       }
 
+      // Upload kartu keluarga jika ada file baru
+      let kartuKeluargaUrl = exists.kartuKeluarga || ''
+      const kartuKeluargaFile = getFile('kartuKeluarga')
+      if (kartuKeluargaFile) {
+        const uploadResult = await new Promise<any>((resolve, reject) => {
+          const uploadStream = cloudinary.uploader.upload_stream(
+            { folder: 'ppdb/kartu-keluarga', resource_type: 'auto' },
+            (error, result) => {
+              if (error) reject(error)
+              else resolve(result)
+            }
+          )
+          uploadStream.end(kartuKeluargaFile.data)
+        })
+        kartuKeluargaUrl = uploadResult.secure_url
+      }
+
+      // Upload akte kelahiran jika ada file baru
+      let akteKelahiranUrl = exists.akteKelahiran || ''
+      const akteKelahiranFile = getFile('akteKelahiran')
+      if (akteKelahiranFile) {
+        const uploadResult = await new Promise<any>((resolve, reject) => {
+          const uploadStream = cloudinary.uploader.upload_stream(
+            { folder: 'ppdb/akte-kelahiran', resource_type: 'auto' },
+            (error, result) => {
+              if (error) reject(error)
+              else resolve(result)
+            }
+          )
+          uploadStream.end(akteKelahiranFile.data)
+        })
+        akteKelahiranUrl = uploadResult.secure_url
+      }
+
       const updated = await prisma.ppdb.update({
         where: { id: Number(id) },
         data: {
@@ -236,6 +307,8 @@ export default defineEventHandler(async (event) => {
           // File
           buktiPembayaran: buktiPembayaranUrl || null,
           lampiran: lampiranUrl || null,
+          kartuKeluarga: kartuKeluargaUrl || null,
+          akteKelahiran: akteKelahiranUrl || null,
           isVerified: isVerifiedValue,
           verifiedAt: verifiedAtValue,
         },
@@ -257,5 +330,12 @@ export default defineEventHandler(async (event) => {
 
     default:
       return { message: 'Method tidak diizinkan' }
+    }
+  } catch (error: any) {
+    console.error('PPDB API Error:', error)
+    throw createError({
+      statusCode: 500,
+      statusMessage: error?.message || 'Terjadi kesalahan pada server',
+    })
   }
 })

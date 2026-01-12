@@ -106,6 +106,8 @@ model Ppdb {
         jumlahSaudara String
         buktiPembayaran String?
         lampiran       String?
+        kartuKeluarga  String?
+        akteKelahiran  String?
         isVerified    Boolean  @default(false)
         verifiedAt    DateTime?
         academicYear  String   @default("2024/2025")

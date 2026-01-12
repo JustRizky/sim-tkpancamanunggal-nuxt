@@ -55,6 +55,8 @@
     dokumen: {
       buktiPembayaran: null as File | null,
       lampiran: null as File | null,
+      kartuKeluarga: null as File | null,
+      akteKelahiran: null as File | null,
     },
   })
 
@@ -215,39 +217,92 @@
   const submitForm = async () => {
     if (!validateStep()) return
 
-    const body = new FormData()
+    try {
+      const body = new FormData()
 
-    Object.entries(form.identitas).forEach(([k, v]) => body.append(k, v))
-    Object.entries(form.orangTua).forEach(([k, v]) => body.append(k, v))
-    Object.entries(form.periodik).forEach(([k, v]) => body.append(k, v))
+      Object.entries(form.identitas).forEach(([k, v]) => body.append(k, v))
+      Object.entries(form.orangTua).forEach(([k, v]) => body.append(k, v))
+      Object.entries(form.periodik).forEach(([k, v]) => body.append(k, v))
 
-    if (form.dokumen.buktiPembayaran) {
-      body.append('buktiPembayaran', form.dokumen.buktiPembayaran)
-    }
-    if (form.dokumen.lampiran) {
-      body.append('lampiran', form.dokumen.lampiran)
-    }
+      if (form.dokumen.buktiPembayaran) {
+        body.append('buktiPembayaran', form.dokumen.buktiPembayaran)
+      }
+      if (form.dokumen.kartuKeluarga) {
+        body.append('kartuKeluarga', form.dokumen.kartuKeluarga)
+      }
+      if (form.dokumen.akteKelahiran) {
+        body.append('akteKelahiran', form.dokumen.akteKelahiran)
+      }
+      if (form.dokumen.lampiran) {
+        body.append('lampiran', form.dokumen.lampiran)
+      }
 
-    const { error } = await useFetch('/api/ppdb', { method: 'POST', body })
+      const response = await $fetch('/api/ppdb', { method: 'POST', body })
 
-    if (error.value) {
+      if (!response) {
+        throw new Error('Respons server kosong')
+      }
+
+      toast.add({
+        title: 'Data PPDB Berhasil Disimpan',
+        duration: 3000,
+        color: 'success',
+      })
+
+      step.value = 1
+      form.identitas = {
+        nama: '',
+        jk: '',
+        nik: '',
+        no_kk: '',
+        tempat_lahir: '',
+        tgl_lahir: '',
+        no_akte: '',
+        agama: '',
+        kewarganegaraan: '',
+        alamat: '',
+        tinggal_bersama: '',
+        anak_ke: '',
+        usia: '',
+        no_hp: '',
+      }
+      form.orangTua = {
+        namaAyah: '',
+        nikAyah: '',
+        tahunLahirAyah: '',
+        pendidikanAyah: '',
+        pekerjaanAyah: '',
+        penghasilanAyah: '',
+        namaIbu: '',
+        nikIbu: '',
+        tahunLahirIbu: '',
+        pendidikanIbu: '',
+        pekerjaanIbu: '',
+        penghasilanIbu: '',
+      }
+      form.periodik = {
+        tinggiBadan: '',
+        beratBadan: '',
+        lingkarKepala: '',
+        jarakTempuh: '',
+        jumlahSaudara: '',
+      }
+      form.dokumen = {
+        buktiPembayaran: null,
+        lampiran: null,
+        kartuKeluarga: null,
+        akteKelahiran: null,
+      }
+    } catch (error: any) {
+      console.error('Error submitting form:', error)
+      const errorMessage = error?.data?.message || error?.message || 'Terjadi kesalahan saat menyimpan data'
       toast.add({
         title: 'Gagal Menyimpan Data',
+        description: errorMessage,
         color: 'error',
-        duration: 3000,
+        duration: 5000,
       })
-      return
     }
-
-    toast.add({
-      title: 'Data PPDB Berhasil Disimpan',
-      duration: 3000,
-      color: 'success',
-    })
-
-    step.value = 1
-    form.dokumen.buktiPembayaran = null
-    form.dokumen.lampiran = null
   }
 
   const handleNumericInput = (value: string, maxLength: number = 16) => {
@@ -1084,6 +1139,52 @@
           </p>
           <p v-if="errors.dokumen.buktiPembayaran" class="text-sm text-red-500">
             {{ errors.dokumen.buktiPembayaran }}
+          </p>
+        </UFormField>
+
+        <UFormField label="Kartu Keluarga">
+          <input
+            type="file"
+            accept="image/*,.pdf"
+            @change="(e) => {
+              const target = e.target as HTMLInputElement
+              if (target.files && target.files[0]) {
+                form.dokumen.kartuKeluarga = target.files[0]
+              }
+            }"
+            class="w-full p-2 border border-blue-400 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          />
+          <p class="text-sm text-gray-500 mt-1">
+            Format: JPG, PNG, atau PDF (Maksimal 5MB)
+          </p>
+          <p v-if="form.dokumen.kartuKeluarga" class="text-sm text-green-600 mt-1">
+            File terpilih: {{ form.dokumen.kartuKeluarga.name }}
+          </p>
+          <p v-if="errors.dokumen.kartuKeluarga" class="text-sm text-red-500">
+            {{ errors.dokumen.kartuKeluarga }}
+          </p>
+        </UFormField>
+
+        <UFormField label="Akte Kelahiran">
+          <input
+            type="file"
+            accept="image/*,.pdf"
+            @change="(e) => {
+              const target = e.target as HTMLInputElement
+              if (target.files && target.files[0]) {
+                form.dokumen.akteKelahiran = target.files[0]
+              }
+            }"
+            class="w-full p-2 border border-blue-400 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          />
+          <p class="text-sm text-gray-500 mt-1">
+            Format: JPG, PNG, atau PDF (Maksimal 5MB)
+          </p>
+          <p v-if="form.dokumen.akteKelahiran" class="text-sm text-green-600 mt-1">
+            File terpilih: {{ form.dokumen.akteKelahiran.name }}
+          </p>
+          <p v-if="errors.dokumen.akteKelahiran" class="text-sm text-red-500">
+            {{ errors.dokumen.akteKelahiran }}
           </p>
         </UFormField>
 
