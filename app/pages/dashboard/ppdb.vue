@@ -261,6 +261,30 @@
                 {{ formatDate(selectedItem.updatedAt) }}
               </p>
             </div>
+
+            <div
+              :class="[
+                'p-3 rounded',
+                selectedItem.isVerified
+                  ? 'bg-green-50 border border-green-200'
+                  : 'bg-red-50 border border-red-200',
+              ]"
+            >
+              <p class="text-sm text-gray-600 mb-1">Status Verifikasi:</p>
+              <p
+                :class="[
+                  'font-medium',
+                  selectedItem.isVerified ? 'text-green-700' : 'text-red-700',
+                ]"
+              >
+                <span class="font-semibold">
+                  {{ selectedItem.isVerified ? '✓ Sudah Verifikasi' : '✗ Belum Verifikasi' }}
+                </span>
+              </p>
+              <p v-if="selectedItem.isVerified && selectedItem.verifiedAt" class="text-xs mt-2">
+                Diverifikasi pada: {{ formatDate(selectedItem.verifiedAt) }}
+              </p>
+            </div>
           </div>
 
           <div class="border-t pt-4 mt-4">

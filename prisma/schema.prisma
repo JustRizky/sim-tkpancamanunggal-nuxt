@@ -107,6 +107,7 @@ model Ppdb {
         buktiPembayaran String?
         lampiran       String?
         isVerified    Boolean  @default(false)
+        verifiedAt    DateTime?
         createdAt     DateTime @default(now())
         updatedAt     DateTime @updatedAt
 }

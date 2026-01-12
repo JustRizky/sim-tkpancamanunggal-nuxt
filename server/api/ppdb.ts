@@ -117,6 +117,7 @@ export default defineEventHandler(async (event) => {
           buktiPembayaran: buktiPembayaranUrl || null,
           lampiran: lampiranUrl || null,
           isVerified: get('isVerified') === 'true',
+          verifiedAt: get('isVerified') === 'true' ? new Date() : null,
         },
       })
 
@@ -136,6 +137,18 @@ export default defineEventHandler(async (event) => {
       })
 
       if (!exists) return { message: 'Data tidak ditemukan' }
+
+      const isVerifiedValue = get('isVerified') === 'true'
+      let verifiedAtValue: Date | null = exists.verifiedAt
+
+      // Set verifiedAt saat status berubah dari false ke true
+      if (isVerifiedValue && !exists.isVerified) {
+        verifiedAtValue = new Date()
+      }
+      // Clear verifiedAt saat status berubah dari true ke false
+      if (!isVerifiedValue && exists.isVerified) {
+        verifiedAtValue = null
+      }
 
       // Upload bukti pembayaran jika ada file baru
       let buktiPembayaranUrl = exists.buktiPembayaran || ''
@@ -216,7 +229,8 @@ export default defineEventHandler(async (event) => {
           // File
           buktiPembayaran: buktiPembayaranUrl || null,
           lampiran: lampiranUrl || null,
-          isVerified: get('isVerified') === 'true',
+          isVerified: isVerifiedValue,
+          verifiedAt: verifiedAtValue,
         },
       })
 
