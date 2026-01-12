@@ -72,6 +72,11 @@ export default defineEventHandler(async (event) => {
         lampiranUrl = uploadResult.secure_url
       }
 
+      // Get active academic year
+      const activeAcademicYear = await prisma.academicYear.findFirst({
+        where: { isActive: true },
+      })
+
       const newEntry = await prisma.ppdb.create({
         data: {
           // Identitas
@@ -118,6 +123,8 @@ export default defineEventHandler(async (event) => {
           lampiran: lampiranUrl || null,
           isVerified: get('isVerified') === 'true',
           verifiedAt: get('isVerified') === 'true' ? new Date() : null,
+          academicYear: activeAcademicYear?.year || '2024/2025',
+          semester: activeAcademicYear?.semester || 'ganjil',
         },
       })
 

@@ -9,10 +9,27 @@
   const loading = ref(true)
   const showLogModal = ref(false)
   const showEditModal = ref(false)
+  const showAcademicYearModal = ref(false)
   const selectedItem = ref<any>(null)
   const editingItem = ref<any>(null)
   const verificationFilter = ref<'all' | 'verified' | 'unverified'>('all')
   const editSubmitting = ref(false)
+  
+  const currentAcademicYear = ref<any>(null)
+  const academicYearForm = reactive({
+    year: '',
+    semester: 'ganjil',
+  })
+
+  const fetchAcademicYear = async () => {
+    try {
+      currentAcademicYear.value = await $fetch('/api/academic-year')
+      academicYearForm.year = currentAcademicYear.value.year
+      academicYearForm.semester = currentAcademicYear.value.semester
+    } catch (error) {
+      console.error('Error fetching academic year:', error)
+    }
+  }
 
   const fetchData = async (filter: 'all' | 'verified' | 'unverified' = 'all') => {
     loading.value = true
@@ -21,7 +38,50 @@
     loading.value = false
   }
 
-  onMounted(() => fetchData())
+  onMounted(() => {
+    fetchAcademicYear()
+    fetchData()
+  })
+
+  const openAcademicYearModal = () => {
+    showAcademicYearModal.value = true
+  }
+
+  const closeAcademicYearModal = () => {
+    showAcademicYearModal.value = false
+  }
+
+  const saveAcademicYear = async () => {
+    try {
+      await $fetch('/api/academic-year', {
+        method: 'PUT',
+        body: {
+          year: academicYearForm.year,
+          semester: academicYearForm.semester,
+        },
+      })
+      
+      // Sync semua data PPDB dengan tahun ajaran yang baru
+      await $fetch('/api/ppdb-sync', {
+        method: 'POST',
+      })
+      
+      await fetchAcademicYear()
+      await fetchData(verificationFilter.value)
+      closeAcademicYearModal()
+      alert('Tahun ajaran berhasil diperbarui dan data PPDB tersinkronisasi!')
+    } catch (error) {
+      console.error('Error:', error)
+      alert('Gagal memperbarui tahun ajaran!')
+    }
+  }
+
+  const getPeriode = () => {
+    if (!currentAcademicYear.value) return ''
+    const year = currentAcademicYear.value.year
+    const semester = currentAcademicYear.value.semester === 'ganjil' ? 'Ganjil' : 'Genap'
+    return `${year} - Semester ${semester}`
+  }
 
   const deleteItem = async (id: number) => {
     if (!confirm('Yakin mau hapus data ini?')) return
@@ -108,7 +168,21 @@
 
 <template>
   <div class="p-4 space-y-6">
-    <h1 class="text-2xl font-bold">Dashboard PPDB</h1>
+    <div class="flex justify-between items-center">
+      <h1 class="text-2xl font-bold">Dashboard PPDB</h1>
+      <button
+        @click="openAcademicYearModal"
+        class="px-4 py-2 bg-indigo-500 text-white rounded hover:bg-indigo-600 font-medium"
+      >
+        ⚙️ Atur Tahun Ajaran
+      </button>
+    </div>
+
+    <!-- Periode Info -->
+    <div class="bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg shadow p-4">
+      <p class="text-sm opacity-90">Periode Pendaftaran:</p>
+      <p class="text-xl font-bold">{{ getPeriode() }}</p>
+    </div>
 
     <!-- Filter Section -->
     <div class="bg-white rounded-lg shadow p-4">
@@ -169,6 +243,7 @@
             <th class="border p-2">Anak Ke</th>
             <th class="border p-2">Usia</th>
             <th class="border p-2">No HP</th>
+            <th class="border p-2">Tahun Ajaran</th>
             <th class="border p-2">Status Verifikasi</th>
             <th class="border p-2">Aksi</th>
           </tr>
@@ -189,6 +264,11 @@
             <td class="border p-2">{{ item.anak_ke }}</td>
             <td class="border p-2">{{ item.usia }}</td>
             <td class="border p-2">{{ item.no_hp }}</td>
+            <td class="border p-2">
+              <span class="px-2 py-1 bg-purple-100 text-purple-800 rounded text-xs font-semibold">
+                {{ item.academicYear }} - {{ item.semester === 'ganjil' ? 'Ganjil' : 'Genap' }}
+              </span>
+            </td>
             <td class="border p-2 text-center">
               <span
                 v-if="item.isVerified"
@@ -536,6 +616,69 @@
               class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:bg-gray-400"
             >
               {{ editSubmitting ? 'Menyimpan...' : 'Simpan' }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Atur Tahun Ajaran -->
+    <div
+      v-if="showAcademicYearModal"
+      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+      @click="closeAcademicYearModal"
+    >
+      <div
+        class="bg-white rounded-lg p-6 max-w-md w-full mx-4"
+        @click.stop
+      >
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-xl font-bold">Atur Tahun Ajaran</h2>
+          <button
+            @click="closeAcademicYearModal"
+            class="text-gray-500 hover:text-gray-700 text-2xl"
+          >
+            ×
+          </button>
+        </div>
+
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium mb-2">Tahun Ajaran</label>
+            <input
+              v-model="academicYearForm.year"
+              type="text"
+              placeholder="2024/2025"
+              class="w-full border rounded px-3 py-2 text-sm"
+            />
+            <p class="text-xs text-gray-500 mt-1">Contoh: 2024/2025</p>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium mb-2">Semester</label>
+            <select v-model="academicYearForm.semester" class="w-full border rounded px-3 py-2 text-sm">
+              <option value="ganjil">Ganjil (I, III, V)</option>
+              <option value="genap">Genap (II, IV, VI)</option>
+            </select>
+          </div>
+
+          <div class="bg-blue-50 p-3 rounded text-sm text-blue-800 border border-blue-200">
+            <p class="font-semibold">Info Periode:</p>
+            <p class="mt-1">{{ academicYearForm.year }} - Semester {{ academicYearForm.semester === 'ganjil' ? 'Ganjil' : 'Genap' }}</p>
+          </div>
+
+          <div class="flex justify-end gap-2 pt-4 border-t">
+            <button
+              @click="closeAcademicYearModal"
+              class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
+            >
+              Batal
+            </button>
+            <button
+              @click="saveAcademicYear"
+              class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+            >
+              Simpan
             </button>
           </div>
         </div>

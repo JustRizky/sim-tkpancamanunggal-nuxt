@@ -108,6 +108,8 @@ model Ppdb {
         lampiran       String?
         isVerified    Boolean  @default(false)
         verifiedAt    DateTime?
+        academicYear  String   @default("2024/2025")
+        semester      String   @default("ganjil")
         createdAt     DateTime @default(now())
         updatedAt     DateTime @updatedAt
 }
@@ -117,6 +119,15 @@ model ContactMessage {
         nama      String
         email     String
         pesan     String
+        createdAt DateTime @default(now())
+        updatedAt DateTime @updatedAt
+}
+
+model AcademicYear {
+        id        Int      @id @default(1)
+        year      String   @unique
+        semester  String
+        isActive  Boolean  @default(true)
         createdAt DateTime @default(now())
         updatedAt DateTime @updatedAt
 }
