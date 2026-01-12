@@ -7,6 +7,8 @@
 
   const list = ref<any[]>([])
   const loading = ref(true)
+  const showLogModal = ref(false)
+  const selectedItem = ref<any>(null)
 
   const fetchData = async () => {
     loading.value = true
@@ -28,6 +30,29 @@
 
   const editItem = (id: number) => {
     navigateTo(`/dashboard/ppdb/edit/${id}`)
+  }
+
+  const showLogHistory = (item: any) => {
+    selectedItem.value = item
+    showLogModal.value = true
+  }
+
+  const closeLogModal = () => {
+    showLogModal.value = false
+    selectedItem.value = null
+  }
+
+  const formatDate = (date: string | Date) => {
+    if (!date) return '-'
+    const d = new Date(date)
+    return d.toLocaleString('id-ID', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+    })
   }
 </script>
 
@@ -97,9 +122,12 @@
               </a>
               <span v-else class="text-gray-400">-</span>
             </td>
-            <td class="border p-2 flex gap-2">
+            <td class="border p-2 flex gap-2 flex-wrap">
               <button class="px-2 py-1 bg-blue-500 text-white rounded" @click="editItem(item.id)">
                 Edit
+              </button>
+              <button class="px-2 py-1 bg-green-500 text-white rounded" @click="showLogHistory(item)">
+                Log History
               </button>
               <button class="px-2 py-1 bg-red-500 text-white rounded" @click="deleteItem(item.id)">
                 Hapus
@@ -110,6 +138,60 @@
       </table>
 
       <div v-if="list.length === 0" class="text-center p-4 text-gray-500">Tidak ada data.</div>
+    </div>
+
+    <!-- Modal Log History -->
+    <div
+      v-if="showLogModal"
+      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+      @click="closeLogModal"
+    >
+      <div
+        class="bg-white rounded-lg p-6 max-w-md w-full mx-4"
+        @click.stop
+      >
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-xl font-bold">Log History</h2>
+          <button
+            @click="closeLogModal"
+            class="text-gray-500 hover:text-gray-700 text-2xl"
+          >
+            ×
+          </button>
+        </div>
+
+        <div v-if="selectedItem" class="space-y-4">
+          <div class="border-b pb-2">
+            <p class="text-sm text-gray-600 mb-1">Nama:</p>
+            <p class="font-semibold">{{ selectedItem.nama }}</p>
+          </div>
+
+          <div class="space-y-3">
+            <div class="bg-green-50 p-3 rounded">
+              <p class="text-sm text-gray-600 mb-1">Dibuat Pada:</p>
+              <p class="font-medium text-green-700">
+                {{ formatDate(selectedItem.createdAt) }}
+              </p>
+            </div>
+
+            <div class="bg-blue-50 p-3 rounded">
+              <p class="text-sm text-gray-600 mb-1">Terakhir Diedit:</p>
+              <p class="font-medium text-blue-700">
+                {{ formatDate(selectedItem.updatedAt) }}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-6 flex justify-end">
+          <button
+            @click="closeLogModal"
+            class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
+          >
+            Tutup
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 </template>
