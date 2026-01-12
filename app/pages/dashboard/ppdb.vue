@@ -61,15 +61,10 @@
         },
       })
       
-      // Sync semua data PPDB dengan tahun ajaran yang baru
-      await $fetch('/api/ppdb-sync', {
-        method: 'POST',
-      })
-      
       await fetchAcademicYear()
       await fetchData(verificationFilter.value)
       closeAcademicYearModal()
-      alert('Tahun ajaran berhasil diperbarui dan data PPDB tersinkronisasi!')
+      alert('Tahun ajaran berhasil diperbarui! Data baru akan menggunakan tahun ajaran ini.')
     } catch (error) {
       console.error('Error:', error)
       alert('Gagal memperbarui tahun ajaran!')
