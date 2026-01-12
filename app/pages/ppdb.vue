@@ -840,8 +840,8 @@
         <UFormField label="Penghasilan Ayah">
           <UInput
             v-model="form.orangTua.penghasilanAyah"
+            type="number"
             placeholder="Penghasilan per bulan"
-            maxlength="20"
             @input="handlePenghasilanAyahInput"
             :ui="{
               container: 'border !border-blue-400 rounded-md',
@@ -935,8 +935,8 @@
         <UFormField label="Penghasilan Ibu">
           <UInput
             v-model="form.orangTua.penghasilanIbu"
+            type="number"
             placeholder="Penghasilan per bulan"
-            maxlength="20"
             @input="handlePenghasilanIbuInput"
             :ui="{
               container: 'border !border-blue-400 rounded-md',
