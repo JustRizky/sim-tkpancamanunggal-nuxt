@@ -79,8 +79,6 @@
             <th class="border p-2">Anak Ke</th>
             <th class="border p-2">Usia</th>
             <th class="border p-2">No HP</th>
-            <th class="border p-2">Bukti Pembayaran</th>
-            <th class="border p-2">Lampiran</th>
             <th class="border p-2">Aksi</th>
           </tr>
         </thead>
@@ -100,28 +98,6 @@
             <td class="border p-2">{{ item.anak_ke }}</td>
             <td class="border p-2">{{ item.usia }}</td>
             <td class="border p-2">{{ item.no_hp }}</td>
-            <td class="border p-2">
-              <a
-                v-if="item.buktiPembayaran"
-                :href="item.buktiPembayaran"
-                target="_blank"
-                class="text-blue-500 hover:underline"
-              >
-                Lihat File
-              </a>
-              <span v-else class="text-gray-400">-</span>
-            </td>
-            <td class="border p-2">
-              <a
-                v-if="item.lampiran"
-                :href="item.lampiran"
-                target="_blank"
-                class="text-blue-500 hover:underline"
-              >
-                Lihat File
-              </a>
-              <span v-else class="text-gray-400">-</span>
-            </td>
             <td class="border p-2 flex gap-2 flex-wrap">
               <button class="px-2 py-1 bg-blue-500 text-white rounded" @click="editItem(item.id)">
                 Edit
@@ -147,7 +123,7 @@
       @click="closeLogModal"
     >
       <div
-        class="bg-white rounded-lg p-6 max-w-md w-full mx-4"
+        class="bg-white rounded-lg p-6 max-w-lg w-full mx-4 max-h-[90vh] overflow-y-auto"
         @click.stop
       >
         <div class="flex justify-between items-center mb-4">
@@ -179,6 +155,67 @@
               <p class="font-medium text-blue-700">
                 {{ formatDate(selectedItem.updatedAt) }}
               </p>
+            </div>
+          </div>
+
+          <div class="border-t pt-4 mt-4">
+            <h3 class="font-semibold mb-3">Dokumen</h3>
+            <div class="space-y-2">
+              <div>
+                <p class="text-sm text-gray-600 mb-1">Bukti Pembayaran:</p>
+                <div v-if="selectedItem.buktiPembayaran">
+                  <a
+                    :href="selectedItem.buktiPembayaran"
+                    target="_blank"
+                    class="text-blue-500 hover:underline inline-flex items-center gap-1"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-4 w-4"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                      />
+                    </svg>
+                    Lihat File
+                  </a>
+                </div>
+                <span v-else class="text-gray-400 text-sm">Tidak ada file</span>
+              </div>
+
+              <div>
+                <p class="text-sm text-gray-600 mb-1">Lampiran:</p>
+                <div v-if="selectedItem.lampiran">
+                  <a
+                    :href="selectedItem.lampiran"
+                    target="_blank"
+                    class="text-blue-500 hover:underline inline-flex items-center gap-1"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-4 w-4"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                      />
+                    </svg>
+                    Lihat File
+                  </a>
+                </div>
+                <span v-else class="text-gray-400 text-sm">Tidak ada file</span>
+              </div>
             </div>
           </div>
         </div>
