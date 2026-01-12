@@ -348,6 +348,7 @@
   watch(
     () => form.orangTua.penghasilanAyah,
     (newValue) => {
+      const filtered = handleNumericInput(newValue, 20)
       if (filtered !== newValue) {
         form.orangTua.penghasilanAyah = filtered
       }
@@ -357,6 +358,7 @@
   watch(
     () => form.orangTua.penghasilanIbu,
     (newValue) => {
+      const filtered = handleNumericInput(newValue, 20)
       if (filtered !== newValue) {
         form.orangTua.penghasilanIbu = filtered
       }
@@ -479,14 +481,18 @@
   const handlePenghasilanAyahInput = (event: Event) => {
     const target = (event.target as HTMLInputElement) || (event.currentTarget as HTMLInputElement)
     if (target) {
-      form.orangTua.penghasilanAyah = handleNumericInput(target.value, 20)
+      const cleanedValue = target.value.replace(/\D/g, '').slice(0, 20)
+      form.orangTua.penghasilanAyah = cleanedValue
+      target.value = cleanedValue
     }
   }
 
   const handlePenghasilanIbuInput = (event: Event) => {
     const target = (event.target as HTMLInputElement) || (event.currentTarget as HTMLInputElement)
     if (target) {
-      form.orangTua.penghasilanIbu = handleNumericInput(target.value, 20)
+      const cleanedValue = target.value.replace(/\D/g, '').slice(0, 20)
+      form.orangTua.penghasilanIbu = cleanedValue
+      target.value = cleanedValue
     }
   }
 
@@ -840,8 +846,10 @@
         <UFormField label="Penghasilan Ayah">
           <UInput
             v-model="form.orangTua.penghasilanAyah"
-            type="number"
-            placeholder="Penghasilan per bulan"
+            type="text"
+            inputmode="numeric"
+            placeholder="Penghasilan per bulan (angka saja)"
+            maxlength="20"
             @input="handlePenghasilanAyahInput"
             :ui="{
               container: 'border !border-blue-400 rounded-md',
@@ -935,8 +943,10 @@
         <UFormField label="Penghasilan Ibu">
           <UInput
             v-model="form.orangTua.penghasilanIbu"
-            type="number"
-            placeholder="Penghasilan per bulan"
+            type="text"
+            inputmode="numeric"
+            placeholder="Penghasilan per bulan (angka saja)"
+            maxlength="20"
             @input="handlePenghasilanIbuInput"
             :ui="{
               container: 'border !border-blue-400 rounded-md',
