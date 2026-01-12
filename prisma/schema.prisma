@@ -106,6 +106,7 @@ model Ppdb {
         jumlahSaudara String
         buktiPembayaran String?
         lampiran       String?
+        isVerified    Boolean  @default(false)
         createdAt     DateTime @default(now())
         updatedAt     DateTime @updatedAt
 }

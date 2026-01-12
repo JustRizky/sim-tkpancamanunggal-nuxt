@@ -3,20 +3,25 @@
     layout: 'dashboard',
   })
 
-  import { ref, onMounted } from 'vue'
+  import { ref, onMounted, computed, reactive } from 'vue'
 
   const list = ref<any[]>([])
   const loading = ref(true)
   const showLogModal = ref(false)
+  const showEditModal = ref(false)
   const selectedItem = ref<any>(null)
+  const editingItem = ref<any>(null)
+  const verificationFilter = ref<'all' | 'verified' | 'unverified'>('all')
+  const editSubmitting = ref(false)
 
-  const fetchData = async () => {
+  const fetchData = async (filter: 'all' | 'verified' | 'unverified' = 'all') => {
     loading.value = true
-    list.value = await $fetch('/api/ppdb')
+    const query = filter === 'all' ? '' : `?isVerified=${filter === 'verified'}`
+    list.value = await $fetch(`/api/ppdb${query}`)
     loading.value = false
   }
 
-  onMounted(fetchData)
+  onMounted(() => fetchData())
 
   const deleteItem = async (id: number) => {
     if (!confirm('Yakin mau hapus data ini?')) return
@@ -25,11 +30,56 @@
       method: 'DELETE',
     })
 
-    await fetchData()
+    await fetchData(verificationFilter.value)
   }
 
-  const editItem = (id: number) => {
-    navigateTo(`/dashboard/ppdb/edit/${id}`)
+  const editItem = (item: any) => {
+    editingItem.value = { ...item }
+    showEditModal.value = true
+  }
+
+  const closeEditModal = () => {
+    showEditModal.value = false
+    editingItem.value = null
+  }
+
+  const saveEditItem = async () => {
+    editSubmitting.value = true
+    try {
+      const formData = new FormData()
+
+      // Tambahkan semua field dari editingItem
+      Object.keys(editingItem.value).forEach((key) => {
+        if (key !== 'id' && key !== 'createdAt' && key !== 'updatedAt') {
+          formData.append(key, editingItem.value[key])
+        }
+      })
+
+      await $fetch(`/api/ppdb?id=${editingItem.value.id}`, {
+        method: 'PUT',
+        body: formData,
+      })
+
+      await fetchData(verificationFilter.value)
+      closeEditModal()
+      alert('Data berhasil diperbarui!')
+    } catch (error) {
+      console.error('Error:', error)
+      alert('Gagal memperbarui data!')
+    } finally {
+      editSubmitting.value = false
+    }
+  }
+
+  const toggleVerificationStatus = () => {
+    if (editingItem.value) {
+      editingItem.value.isVerified = !editingItem.value.isVerified
+    }
+  }
+
+  const changeFilter = (filter: 'all' | 'verified' | 'unverified') => {
+    verificationFilter.value = filter
+    fetchData(filter)
   }
 
   const showLogHistory = (item: any) => {
@@ -60,6 +110,46 @@
   <div class="p-4 space-y-6">
     <h1 class="text-2xl font-bold">Dashboard PPDB</h1>
 
+    <!-- Filter Section -->
+    <div class="bg-white rounded-lg shadow p-4">
+      <h2 class="font-semibold mb-3">Filter Status Verifikasi</h2>
+      <div class="flex gap-2 flex-wrap">
+        <button
+          @click="changeFilter('all')"
+          :class="[
+            'px-4 py-2 rounded font-medium transition',
+            verificationFilter === 'all'
+              ? 'bg-blue-500 text-white'
+              : 'bg-gray-200 text-gray-700 hover:bg-gray-300',
+          ]"
+        >
+          Semua ({{ list.length }})
+        </button>
+        <button
+          @click="changeFilter('verified')"
+          :class="[
+            'px-4 py-2 rounded font-medium transition',
+            verificationFilter === 'verified'
+              ? 'bg-green-500 text-white'
+              : 'bg-gray-200 text-gray-700 hover:bg-gray-300',
+          ]"
+        >
+          Sudah Verifikasi ({{ list.filter((item) => item.isVerified).length }})
+        </button>
+        <button
+          @click="changeFilter('unverified')"
+          :class="[
+            'px-4 py-2 rounded font-medium transition',
+            verificationFilter === 'unverified'
+              ? 'bg-red-500 text-white'
+              : 'bg-gray-200 text-gray-700 hover:bg-gray-300',
+          ]"
+        >
+          Belum Verifikasi ({{ list.filter((item) => !item.isVerified).length }})
+        </button>
+      </div>
+    </div>
+
     <div v-if="loading">Loading...</div>
 
     <div v-else class="overflow-x-auto">
@@ -79,6 +169,7 @@
             <th class="border p-2">Anak Ke</th>
             <th class="border p-2">Usia</th>
             <th class="border p-2">No HP</th>
+            <th class="border p-2">Status Verifikasi</th>
             <th class="border p-2">Aksi</th>
           </tr>
         </thead>
@@ -98,8 +189,22 @@
             <td class="border p-2">{{ item.anak_ke }}</td>
             <td class="border p-2">{{ item.usia }}</td>
             <td class="border p-2">{{ item.no_hp }}</td>
+            <td class="border p-2 text-center">
+              <span
+                v-if="item.isVerified"
+                class="inline-block px-3 py-1 bg-green-100 text-green-800 rounded-full font-semibold text-xs"
+              >
+                ✓ Sudah Verifikasi
+              </span>
+              <span
+                v-else
+                class="inline-block px-3 py-1 bg-red-100 text-red-800 rounded-full font-semibold text-xs"
+              >
+                ✗ Belum Verifikasi
+              </span>
+            </td>
             <td class="border p-2 flex gap-2 flex-wrap">
-              <button class="px-2 py-1 bg-blue-500 text-white rounded" @click="editItem(item.id)">
+              <button class="px-2 py-1 bg-blue-500 text-white rounded" @click="editItem(item)">
                 Edit
               </button>
               <button class="px-2 py-1 bg-green-500 text-white rounded" @click="showLogHistory(item)">
@@ -227,6 +332,188 @@
           >
             Tutup
           </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Edit -->
+    <div
+      v-if="showEditModal"
+      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+      @click="closeEditModal"
+    >
+      <div
+        class="bg-white rounded-lg p-6 max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto"
+        @click.stop
+      >
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-xl font-bold">Edit Data PPDB</h2>
+          <button
+            @click="closeEditModal"
+            class="text-gray-500 hover:text-gray-700 text-2xl"
+          >
+            ×
+          </button>
+        </div>
+
+        <div v-if="editingItem" class="space-y-4">
+          <!-- Identitas Section -->
+          <fieldset class="border p-4 rounded">
+            <legend class="font-semibold text-lg">Data Identitas</legend>
+            <div class="grid grid-cols-2 gap-4 mt-4">
+              <div>
+                <label class="block text-sm font-medium mb-1">Nama</label>
+                <input
+                  v-model="editingItem.nama"
+                  type="text"
+                  class="w-full border rounded px-3 py-2 text-sm"
+                />
+              </div>
+              <div>
+                <label class="block text-sm font-medium mb-1">Jenis Kelamin</label>
+                <select v-model="editingItem.jk" class="w-full border rounded px-3 py-2 text-sm">
+                  <option value="">-- Pilih --</option>
+                  <option value="Laki-laki">Laki-laki</option>
+                  <option value="Perempuan">Perempuan</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-sm font-medium mb-1">NIK</label>
+                <input
+                  v-model="editingItem.nik"
+                  type="text"
+                  class="w-full border rounded px-3 py-2 text-sm"
+                />
+              </div>
+              <div>
+                <label class="block text-sm font-medium mb-1">No KK</label>
+                <input
+                  v-model="editingItem.no_kk"
+                  type="text"
+                  class="w-full border rounded px-3 py-2 text-sm"
+                />
+              </div>
+              <div>
+                <label class="block text-sm font-medium mb-1">Tempat Lahir</label>
+                <input
+                  v-model="editingItem.tempat_lahir"
+                  type="text"
+                  class="w-full border rounded px-3 py-2 text-sm"
+                />
+              </div>
+              <div>
+                <label class="block text-sm font-medium mb-1">Tanggal Lahir</label>
+                <input
+                  v-model="editingItem.tgl_lahir"
+                  type="date"
+                  class="w-full border rounded px-3 py-2 text-sm"
+                />
+              </div>
+              <div>
+                <label class="block text-sm font-medium mb-1">No Akte</label>
+                <input
+                  v-model="editingItem.no_akte"
+                  type="text"
+                  class="w-full border rounded px-3 py-2 text-sm"
+                />
+              </div>
+              <div>
+                <label class="block text-sm font-medium mb-1">Agama</label>
+                <select v-model="editingItem.agama" class="w-full border rounded px-3 py-2 text-sm">
+                  <option value="">-- Pilih --</option>
+                  <option value="Islam">Islam</option>
+                  <option value="Kristen">Kristen</option>
+                  <option value="Katolik">Katolik</option>
+                  <option value="Hindu">Hindu</option>
+                  <option value="Buddha">Buddha</option>
+                  <option value="Konghucu">Konghucu</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-sm font-medium mb-1">Kewarganegaraan</label>
+                <input
+                  v-model="editingItem.kewarganegaraan"
+                  type="text"
+                  class="w-full border rounded px-3 py-2 text-sm"
+                />
+              </div>
+              <div class="col-span-2">
+                <label class="block text-sm font-medium mb-1">Alamat</label>
+                <input
+                  v-model="editingItem.alamat"
+                  type="text"
+                  class="w-full border rounded px-3 py-2 text-sm"
+                />
+              </div>
+              <div>
+                <label class="block text-sm font-medium mb-1">Tinggal Bersama</label>
+                <input
+                  v-model="editingItem.tinggal_bersama"
+                  type="text"
+                  class="w-full border rounded px-3 py-2 text-sm"
+                />
+              </div>
+              <div>
+                <label class="block text-sm font-medium mb-1">Anak Ke</label>
+                <input
+                  v-model="editingItem.anak_ke"
+                  type="number"
+                  class="w-full border rounded px-3 py-2 text-sm"
+                />
+              </div>
+              <div>
+                <label class="block text-sm font-medium mb-1">Usia</label>
+                <input
+                  v-model="editingItem.usia"
+                  type="number"
+                  class="w-full border rounded px-3 py-2 text-sm"
+                />
+              </div>
+              <div>
+                <label class="block text-sm font-medium mb-1">No HP</label>
+                <input
+                  v-model="editingItem.no_hp"
+                  type="text"
+                  class="w-full border rounded px-3 py-2 text-sm"
+                />
+              </div>
+            </div>
+          </fieldset>
+
+          <!-- Status Verifikasi -->
+          <div class="bg-blue-50 p-4 rounded border border-blue-200">
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input
+                type="checkbox"
+                v-model="editingItem.isVerified"
+                class="w-4 h-4"
+              />
+              <span class="font-medium text-sm">Status Verifikasi</span>
+              <span v-if="editingItem.isVerified" class="text-green-600 text-sm font-semibold">
+                ✓ Sudah Verifikasi
+              </span>
+              <span v-else class="text-red-600 text-sm font-semibold">
+                ✗ Belum Verifikasi
+              </span>
+            </label>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="flex justify-end gap-2 pt-4 border-t">
+            <button
+              @click="closeEditModal"
+              class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
+            >
+              Batal
+            </button>
+            <button
+              @click="saveEditItem"
+              :disabled="editSubmitting"
+              class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:bg-gray-400"
+            >
+              {{ editSubmitting ? 'Menyimpan...' : 'Simpan' }}
+            </button>
+          </div>
         </div>
       </div>
     </div>

@@ -15,7 +15,20 @@ export default defineEventHandler(async (event) => {
 
   switch (method) {
     case 'GET': {
-      const data = await prisma.ppdb.findMany()
+      const query = getQuery(event)
+      const where: any = {}
+
+      // Filter berdasarkan status verifikasi
+      if (query.isVerified !== undefined) {
+        where.isVerified = query.isVerified === 'true'
+      }
+
+      const data = await prisma.ppdb.findMany({
+        where,
+        orderBy: {
+          createdAt: 'desc',
+        },
+      })
       return data
     }
 
@@ -103,6 +116,7 @@ export default defineEventHandler(async (event) => {
           // File
           buktiPembayaran: buktiPembayaranUrl || null,
           lampiran: lampiranUrl || null,
+          isVerified: get('isVerified') === 'true',
         },
       })
 
@@ -202,6 +216,7 @@ export default defineEventHandler(async (event) => {
           // File
           buktiPembayaran: buktiPembayaranUrl || null,
           lampiran: lampiranUrl || null,
+          isVerified: get('isVerified') === 'true',
         },
       })
 

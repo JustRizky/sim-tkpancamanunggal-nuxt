@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE `ppdb` ADD COLUMN `isPaid` BOOLEAN NOT NULL DEFAULT false;
