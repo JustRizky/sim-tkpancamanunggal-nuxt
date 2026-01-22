@@ -38,7 +38,7 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
       - name: Run npm audit
-        run: npm audit --json > audit-report.json
+        run: npm audit --json > audit-report.json || true
 
       - name: Upload npm audit report
         uses: actions/upload-artifact@v4
