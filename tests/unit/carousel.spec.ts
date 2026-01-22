@@ -1,6 +1,6 @@
 import { mount } from '@vue/test-utils'
 import { describe, it, expect } from 'vitest'
-import Carousel from './../app/components/carousel.vue'
+import Carousel from '../../app/components/carousel.vue'
 
 const UCarouselMock = {
   name: 'UCarousel',

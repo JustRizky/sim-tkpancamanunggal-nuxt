@@ -1,6 +1,6 @@
 import { mount } from '@vue/test-utils'
 import { describe, it, expect } from 'vitest'
-import Footer from './../app/components/footer.vue'
+import Footer from '../../app/components/footer.vue'
 
 const UFooterMock = {
   name: 'UFooter',

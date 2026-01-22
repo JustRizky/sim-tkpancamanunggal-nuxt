@@ -1,6 +1,6 @@
 import { mount } from '@vue/test-utils'
 import { describe, it, expect, vi } from 'vitest'
-import CTA from './../app/components/cta.vue'
+import CTA from '../../app/components/cta.vue'
 
 const pushMock = vi.fn()
 vi.mock('vue-router', () => ({

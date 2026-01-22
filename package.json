@@ -26,6 +26,7 @@
     "db:studio": "bunx prisma studio",
     "-----TEST-----": "exit 0",
     "test": "vitest",
+    "test:coverage": "vitest run --coverage",
     "test:ui": "vitest --ui",
     "test:watch": "vitet --watch"
   },
@@ -57,6 +58,7 @@
     "@nuxt/ui": "^4.0.1",
     "@types/bcrypt": "^6.0.0",
     "@vitejs/plugin-vue": "^6.0.1",
+    "@vitest/coverage-v8": "^4.0.17",
     "@vue/test-utils": "^2.4.6",
     "@vueuse/core": "^13.9.0",
     "autoprefixer": "^10.4.21",

@@ -1,6 +1,6 @@
 import { mount } from '@vue/test-utils'
 import { describe, it, expect, vi } from 'vitest'
-import Header from './../app/components/header.vue'
+import Header from '../../app/components/header.vue'
 
 vi.mock('vue-router', () => ({
   useRoute: () => ({
