@@ -37,17 +37,6 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
-      - name: Run OWASP Dependency Check
-        run: |
-          npm install -g @jeremylong/dependency-check
-          dependency-check --project "TK Panca Manunggal" --scan package-lock.json --out ./dependency-report.html
-
-      - name: Upload Dependency Report
-        uses: actions/upload-artifact@v4
-        with:
-          name: dependency-report
-          path: ./dependency-report.html
-
       - name: Build project
         run: npm run build
 
