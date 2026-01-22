@@ -38,10 +38,6 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
           args: >
-            -Dsonar.projectKey=JustRizky_sim-tkpancamanunggal-nuxt
-            -Dsonar.organization=JustRizky
-            -Dsonar.sources=.
-            -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
             -Dsonar.qualitygate.wait=true
 
       - name: Run npm audit
