@@ -36,6 +36,22 @@ jobs:
         uses: SonarSource/sonarcloud-github-action@v2
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          args: >
+            -Dsonar.projectKey=JustRizky_sim-tkpancamanunggal-nuxt
+            -Dsonar.organization=JustRizky
+            -Dsonar.sources=.
+            -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
+            -Dsonar.qualitygate.wait=true
+
+      - name: Run npm audit
+        run: npm audit --json > audit-report.json
+
+      - name: Upload npm audit report
+        uses: actions/upload-artifact@v4
+        with:
+          name: npm-audit-report
+          path: audit-report.json
 
       - name: Build project
         run: npm run build
