@@ -23,8 +23,11 @@ jobs:
         with:
           node-version: 20
 
-      - name: Install dependencies (skip prepare)
-        run: npm install --ignore-scripts
+      - name: Install dependencies
+        run: npm install
+
+      - name: Prepare Nuxt
+        run: npx nuxt prepare
 
       - name: Run unit test with coverage
         run: npm run test:coverage
