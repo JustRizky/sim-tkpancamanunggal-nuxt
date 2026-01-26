@@ -33,7 +33,7 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Pull staging image
-        run: docker pull yourdockerhubuser/tkpancamanunggal:staging
+        run: docker pull anandamrkl/tkpancamanunggal:latest
 
       - name: Run container (staging)
         run: |
@@ -41,7 +41,7 @@ jobs:
           -p 3000:3000 \
           --env-file .env.staging \
           --link db:db \
-          yourdockerhubuser/tkpancamanunggal:staging
+          anandamrkl/tkpancamanunggal:staging
 
       - name: Wait for app
         run: sleep 15
