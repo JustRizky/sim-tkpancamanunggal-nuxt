@@ -72,28 +72,7 @@ pipeline {
                 archiveArtifacts artifacts: '.output/**', allowEmptyArchive: true
             }
         }
-    }
 
-    post {
-        success {
-            script {
-                def message = '{"content": "CI Pipeline SUCCESS"}'
-                sh "curl -H 'Content-Type: application/json' -d '${message}' ${DISCORD_WEBHOOK}"
-            }
-        }
-        failure {
-            script {
-                def message = '{"content": "CI Pipeline FAILED"}'
-                sh "curl -H 'Content-Type: application/json' -d '${message}' ${DISCORD_WEBHOOK}"
-            }
-        }
-    }
-}
-
-pipeline {
-    agent any
-
-    stages {
         stage('Staging Deployment') {
             steps {
                 script {
@@ -126,14 +105,18 @@ pipeline {
     post {
         success {
             script {
-                def message = '{"content": "Staging pipeline SUCCESS"}'
-                sh "curl -H 'Content-Type: application/json' -d '${message}' ${DISCORD_WEBHOOK}"
+                withCredentials([string(credentialsId: 'DISCORD_WEBHOOK', variable: 'DISCORD_WEBHOOK')]) {
+                    def message = '{"content": "CI and Staging Pipeline SUCCESS"}'
+                    sh "curl -H 'Content-Type: application/json' -d '${message}' ${DISCORD_WEBHOOK}"
+                }
             }
         }
         failure {
             script {
-                def message = '{"content": "Staging pipeline FAILED"}'
-                sh "curl -H 'Content-Type: application/json' -d '${message}' ${DISCORD_WEBHOOK}"
+                withCredentials([string(credentialsId: 'DISCORD_WEBHOOK', variable: 'DISCORD_WEBHOOK')]) {
+                    def message = '{"content": "CI and Staging Pipeline FAILED"}'
+                    sh "curl -H 'Content-Type: application/json' -d '${message}' ${DISCORD_WEBHOOK}"
+                }
             }
         }
     }
