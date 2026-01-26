@@ -6,7 +6,7 @@
 
 generator client {
         provider      = "prisma-client-js"
-        binaryTargets = ["native", "linux-arm64-openssl-3.0.x"]
+        binaryTargets = ["native", "linux-arm64-openssl-3.0.x", "linux-musl-arm64-openssl-3.0.x"]
         // output   = "../app/generated/prisma"
 }
 
@@ -99,21 +99,21 @@ model Ppdb {
         pekerjaanIbu   String
         penghasilanIbu String
 
-        tinggiBadan   String
-        beratBadan    String
-        lingkarKepala String
-        jarakTempuh   String
-        jumlahSaudara String
+        tinggiBadan     String
+        beratBadan      String
+        lingkarKepala   String
+        jarakTempuh     String
+        jumlahSaudara   String
         buktiPembayaran String?
-        lampiran       String?
-        kartuKeluarga  String?
-        akteKelahiran  String?
-        isVerified    Boolean  @default(false)
-        verifiedAt    DateTime?
-        academicYear  String   @default("2024/2025")
-        semester      String   @default("ganjil")
-        createdAt     DateTime @default(now())
-        updatedAt     DateTime @updatedAt
+        lampiran        String?
+        kartuKeluarga   String?
+        akteKelahiran   String?
+        isVerified      Boolean   @default(false)
+        verifiedAt      DateTime?
+        academicYear    String    @default("2024/2025")
+        semester        String    @default("ganjil")
+        createdAt       DateTime  @default(now())
+        updatedAt       DateTime  @updatedAt
 }
 
 model ContactMessage {

@@ -1,0 +1,26 @@
+name: Staging Deployment
+
+on:
+  push:
+    branches:
+      - staging
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker image
+        run: |
+          docker build -t tkpancamanunggal:latest .
+
+      - name: Staging deployment simulation
+        run: |
+          echo "Deploying to staging environment..."
+          echo "Staging deployment success"
