@@ -13,4 +13,7 @@ export default defineNuxtConfig({
   colorMode: {
     preference: 'light',
   },
+  build: {
+    analyze: true,
+  },
 })
