@@ -2,6 +2,15 @@
 # Build stage
 # ===============================
 FROM oven/bun:1 as build
+LABEL version="1.0" \
+      maintainer="anandamrkl@gmail.com" \
+      description="Official Website for TK Panca Manunggal" \
+      vendor="TK Panca Manunggal" \
+      org.label-schema.schema-version="1.0" \
+      org.label-schema.name="TK Panca Manunggal Website" \
+      org.label-schema.url="https://tkpancamanunggal.local" \
+      org.label-schema.license="MIT"
+
 WORKDIR /app
 
 COPY package.json bun.lock* ./
@@ -17,6 +26,15 @@ RUN bun run build --production
 # Production stage
 # ===============================
 FROM oven/bun:1-alpine as production
+LABEL version="1.0" \
+      maintainer="anandamrkl@gmail.com" \
+      description="Official Website for TK Panca Manunggal" \
+      vendor="TK Panca Manunggal" \
+      org.label-schema.schema-version="1.0" \
+      org.label-schema.name="TK Panca Manunggal Website" \
+      org.label-schema.url="https://tkpancamanunggal.local" \
+      org.label-schema.license="MIT"
+
 WORKDIR /app
 
 RUN apk add --no-cache openssl
