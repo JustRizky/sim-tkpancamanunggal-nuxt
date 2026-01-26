@@ -17,13 +17,13 @@ jobs:
         ports:
           - 3306:3306
         options: >-
-          --health-cmd="mysqladmin ping -h localhost" 
-          --health-interval=5s 
-          --health-timeout=3s 
+          --health-cmd="mysqladmin ping -h localhost"
+          --health-interval=5s
+          --health-timeout=3s
           --health-retries=5
 
     steps:
-      - name: Checkout source code
+      - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Login to Docker Hub
@@ -32,15 +32,22 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Pull staging image
-        run: docker pull anandamrkl/tkpancamanunggal:staging
+      - name: Build Docker image (staging)
+        run: |
+          docker build -t anandamrkl/tkpancamanunggal:staging .
+
+      - name: Create .env.staging from secrets
+        run: |
+          echo "DATABASE_URL=${{ secrets.STAGING_DATABASE_URL }}" >> .env.staging
+          echo "JWT_SECRET=${{ secrets.STAGING_JWT_SECRET }}" >> .env.staging
+          echo "NODE_ENV=staging" >> .env.staging
+          echo "PORT=3000" >> .env.staging
 
       - name: Run container (staging)
         run: |
           docker run -d --name tkpancamanunggal-staging \
           -p 3000:3000 \
           --env-file .env.staging \
-          --link db:db \
           anandamrkl/tkpancamanunggal:staging
 
       - name: Wait for app
