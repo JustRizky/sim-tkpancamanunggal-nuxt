@@ -3,6 +3,7 @@
     "collect": {
       "staticDistDir": ".output/public",
       "url": ["http://localhost:3000"],
+      "startServerCommand": "npm build && npm start",
       "numberOfRuns": 3
     },
     "upload": {
