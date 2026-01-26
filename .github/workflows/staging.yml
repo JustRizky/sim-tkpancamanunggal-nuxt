@@ -33,7 +33,7 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Pull staging image
-        run: docker pull anandamrkl/tkpancamanunggal:latest
+        run: docker pull anandamrkl/tkpancamanunggal:staging
 
       - name: Run container (staging)
         run: |
