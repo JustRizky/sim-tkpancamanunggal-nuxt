@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    tools {
+        nodejs 'NodeJS 20'
+    }
+
     environment {
         NUXT_TELEMETRY_DISABLED = '1'
         NUXT_EXPERIMENTAL_OXC = '0'
@@ -11,15 +15,6 @@ pipeline {
         stage('Checkout') {
             steps {
                 checkout scm
-            }
-        }
-
-        stage('Setup Node.js') {
-            steps {
-                script {
-                    sh 'curl -sL https://deb.nodesource.com/setup_20.x | sudo -E bash -'
-                    sh 'sudo apt-get install -y nodejs'
-                }
             }
         }
 
