@@ -71,6 +71,13 @@ jobs:
         env:
           LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
 
+      - name: Audit URLs using Lighthouse
+        uses: treosh/lighthouse-ci-action@v7
+        with:
+          urls: http://localhost:3000
+          uploadArtifacts: true
+          temporaryPublicStorage: true
+
       - name: Upload Lighthouse results as artifacts
         uses: actions/upload-artifact@v4
         with:
