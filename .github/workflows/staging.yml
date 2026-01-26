@@ -55,7 +55,7 @@ jobs:
 
       - name: Health check
         run: |
-          docker exec tkpancamanunggal-staging curl --fail http://localhost:3000 || exit 1
+          docker exec tkpancamanunggal-staging sh -c "wget -qO- http://localhost:3000"
 
       - name: Notify Discord (Success)
         if: success()
