@@ -19,5 +19,19 @@ jobs:
       - name: Build Docker image (staging)
         run: docker build -t tkpancamanunggal:staging .
 
+      - name: Notify Discord (Success)
+        if: success()
+        run: |
+          curl -H "Content-Type: application/json" \
+          -d '{"content":"Staging pipeline SUCCESS"}' \
+          ${{ secrets.DISCORD_WEBHOOK }}
+
+      - name: Notify Discord (Failure)
+        if: failure()
+        run: |
+          curl -H "Content-Type: application/json" \
+          -d '{"content":"Staging pipeline FAILED"}' \
+          ${{ secrets.DISCORD_WEBHOOK }}
+
       - name: Staging pipeline success
         run: echo "Staging image build success"
