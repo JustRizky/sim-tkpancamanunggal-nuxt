@@ -51,20 +51,11 @@ jobs:
           anandamrkl/tkpancamanunggal:staging
 
       - name: Wait for app to be ready
-        run: |
-          for i in {1..30}; do
-            if curl --fail http://localhost:3000; then
-              echo "App is ready!"
-              exit 0
-            fi
-              echo "Waiting for app..."
-              sleep 5
-          done
-          echo "App did not start in time"
-          exit 1
+        run: sleep 15
 
       - name: Health check
-        run: curl --fail http://localhost:3000 || exit 1
+        run: |
+          docker exec tkpancamanunggal-staging curl --fail http://localhost:3000 || exit 1
 
       - name: Notify Discord (Success)
         if: success()
