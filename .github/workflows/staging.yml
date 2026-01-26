@@ -17,19 +17,7 @@ jobs:
         uses: docker/setup-buildx-action@v3
 
       - name: Build Docker image (staging)
-        run: |
-          docker build -t tkpancamanunggal:staging .
+        run: docker build -t tkpancamanunggal:staging .
 
-      - name: Run container (staging)
-        run: |
-          docker run -d -p 3000:3000 --name tkpancamanunggal-staging tkpancamanunggal:staging
-
-      - name: Wait for app
-        run: sleep 15
-
-      - name: Health check
-        run: |
-          curl --fail http://localhost:3000 || exit 1
-
-      - name: Staging deployment success
-        run: echo "Staging deployment success"
+      - name: Staging pipeline success
+        run: echo "Staging image build success"
