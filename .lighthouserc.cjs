@@ -18,7 +18,6 @@ module.exports = {
         'render-blocking-insight': ['warn'],
         'render-blocking-resources': ['warn'],
       },
-      preset: 'lighthouse:recommended',
     },
     collect: {
       staticDistDir: './.output/public',
