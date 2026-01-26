@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  app:
+    image: tkpancamanunggal:staging
+    container_name: tkpancamanunggal-staging
+    env_file:
+      - .env.staging
+    ports:
+      - '3000:3000'
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: mysql:8
+    container_name: mysql-staging
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: admin123
+      MYSQL_DATABASE: tkpancamanunggal
+    ports:
+      - '3306:3306'
+    volumes:
+      - mysql-staging-data:/var/lib/mysql
+    healthcheck:
+      test: ['CMD', 'mysqladmin', 'ping', '-h', 'localhost']
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  mysql-staging-data:
