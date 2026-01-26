@@ -106,7 +106,9 @@ pipeline {
             script {
                 withCredentials([string(credentialsId: 'DISCORD_WEBHOOK', variable: 'DISCORD_WEBHOOK')]) {
                     def message = '{"content": "CI and Staging Pipeline SUCCESS"}'
-                    sh "curl -H 'Content-Type: application/json' -d '${message}' $DISCORD_WEBHOOK"
+                    sh """
+                    curl -H 'Content-Type: application/json' -d '${message}' ${DISCORD_WEBHOOK}
+                    """
                 }
             }
         }
@@ -114,7 +116,9 @@ pipeline {
             script {
                 withCredentials([string(credentialsId: 'DISCORD_WEBHOOK', variable: 'DISCORD_WEBHOOK')]) {
                     def message = '{"content": "CI and Staging Pipeline FAILED"}'
-                    sh "curl -H 'Content-Type: application/json' -d '${message}' $DISCORD_WEBHOOK"
+                    sh """
+                    curl -H 'Content-Type: application/json' -d '${message}' ${DISCORD_WEBHOOK}
+                    """
                 }
             }
         }
