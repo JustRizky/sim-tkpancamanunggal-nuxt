@@ -54,3 +54,17 @@ jobs:
         with:
           name: nuxt-build
           path: .output
+
+      - name: Install Lighthouse CI
+        run: |
+          npm install -g @lhci/cli
+
+      - name: Run Lighthouse CI
+        run: |
+          lhci autorun --upload.target=temporary-public-storage
+
+      - name: Upload Lighthouse results as artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: lighthouse-results
+          path: ./lighthouse-results/
