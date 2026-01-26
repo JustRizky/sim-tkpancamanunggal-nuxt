@@ -61,6 +61,7 @@ jobs:
 
       - name: Start Nuxt server and Lighthouse CI
         run: |
+          npm run generate
           npm run start &
           npm lhci:desktop
         env:
