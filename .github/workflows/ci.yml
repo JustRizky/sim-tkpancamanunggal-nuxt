@@ -59,6 +59,12 @@ jobs:
         run: |
           npm install -g @lhci/cli
 
+      - name: Start Nuxt server
+        run: npm run start &
+
+      - name: Wait for server to be ready
+        run: sleep 10
+
       - name: Run Lighthouse CI (Desktop)
         run: |
           npm run lhci:desktop
