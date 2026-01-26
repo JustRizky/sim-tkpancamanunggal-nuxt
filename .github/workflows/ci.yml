@@ -62,8 +62,7 @@ jobs:
       - name: Start Nuxt server and Lighthouse CI
         run: |
           npm run start &
-          sleep 30
-          lhci autorun
+          npm lhci:desktop
         env:
           LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
 
