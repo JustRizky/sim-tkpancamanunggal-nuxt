@@ -63,7 +63,7 @@ jobs:
         run: |
           npm run generate
           npm run start &
-          npm lhci:desktop
+          npm run lhci:desktop
         env:
           LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
 
