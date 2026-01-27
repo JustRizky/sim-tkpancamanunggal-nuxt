@@ -10,7 +10,7 @@
 ## 2. Clone repository
 
 ```bash
-git clone https://github.com/username/repo.git
+git clone https://github.com/justrizky/sim-tkpancamanunggal-nuxt.git
 cd repo
 ```
 

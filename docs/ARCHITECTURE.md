@@ -5,14 +5,14 @@
 Sistem ini terdiri dari:
 
 - Frontend: Nuxt.js
-- Backend: Nuxt.js
+- Backend: Node.js
 - Database: MySQL
 - CI/CD: GitHub Actions
 - Containerization: Docker
 
 ## 2. Diagram Arsitektur
 
-![Arsitektur Sistem](.png)
+![Arsitektur Sistem](./images/arsitektur.png)
 
 ## 3. Pipeline CI/CD
 
@@ -23,4 +23,4 @@ Sistem ini terdiri dari:
 
 ### Visualisasi Pipeline
 
-![Pipeline CI/CD](.png)
+![Pipeline CI/CD](./images/pipeline.png)

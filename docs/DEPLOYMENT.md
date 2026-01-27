@@ -14,4 +14,4 @@
 
 ## Diagram Deployment
 
-![Deployment Flow](.png)
+![Deployment Flow](./images/deployment.png)
