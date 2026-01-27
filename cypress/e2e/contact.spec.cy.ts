@@ -1,0 +1,25 @@
+describe('contact spec', () => {
+  it('passes', () => {
+    cy.visit('localhost:3000/contact')
+    cy.get('input[placeholder="Masukkan nama anda"]').type('rizky')
+    cy.get('input[placeholder="Masukkan email anda"]').type('anandamrkl@gmail.com')
+    cy.get('textarea[placeholder="Tulis pesan anda di sini..."]').type('Ini pesan uji coba')
+    cy.contains('button', 'Kirim Pesan').click()
+    cy.get('div.text-sm.font-medium.text-highlighted')
+      .should('be.visible')
+      .and('contain', 'Pesan Terkirim')
+    cy.wait(10000)
+    cy.get('div.text-sm.font-medium.text-highlighted').should('not.exist')
+  })
+
+  it('fails', () => {
+    cy.visit('localhost:3000/contact')
+    cy.get('input[placeholder="Masukkan nama anda"]').type('rizky')
+    cy.get('input[placeholder="Masukkan email anda"]').type('anandamrkl@gmail.com')
+    cy.get('textarea[placeholder="Tulis pesan anda di sini..."]').type('Halo')
+    cy.contains('button', 'Kirim Pesan').click()
+    cy.get('div.text-sm.font-medium.text-highlighted')
+      .should('be.visible')
+      .and('contain', 'Validasi Gagal')
+  })
+})

@@ -69,6 +69,7 @@
     "@vueuse/core": "^13.9.0",
     "autoprefixer": "^10.4.21",
     "bundle-analyzer": "^0.0.6",
+    "cypress": "^15.9.0",
     "jsdom": "^27.1.0",
     "postcss": "^8.5.6",
     "prettier": "^3.6.2",
